@@ -1,18 +1,12 @@
 #include <sst_config.h>
-
 #include <sstream>
-
 #include "multiBus.h"
-
 #include <sst/core/params.h>
 #include <sst/core/interfaces/stringEvent.h>
-#include "memEvent.h"
-#include "memEventBase.h"
+#include <sst/core/event.h>
 
 using namespace std;
 using namespace SST;
-using namespace SST::MemHierarchy;
-
 
 const MultiBus::key_t MultiBus::ANY_KEY = std::pair<uint64_t, int>((uint64_t)-1, -1);
 
@@ -22,7 +16,6 @@ MultiBus::MultiBus(ComponentId_t id, Params& params) : Component(id) {
     idleCount_ = 0;
     busOn_ = true;
 }
-
 
 void MultiBus::processIncomingEvent(SST::Event* ev) {
     eventQueue_.push(ev);
@@ -34,7 +27,6 @@ void MultiBus::processIncomingEvent(SST::Event* ev) {
 }
 
 bool MultiBus::clockTick(Cycle_t time) {
-
     if (eventQueue_.empty())
         idleCount_++;
 
@@ -46,12 +38,7 @@ bool MultiBus::clockTick(Cycle_t time) {
 
     while (!eventQueue_.empty()) {
         SST::Event* event = eventQueue_.front();
-
-        if (broadcast_)
-            broadcastEvent(event);
-        else
-            sendSingleEvent(event);
-
+        broadcastEvent(event);
         eventQueue_.pop();
         idleCount_ = 0;
 
@@ -62,41 +49,18 @@ bool MultiBus::clockTick(Cycle_t time) {
     return false;
 }
 
-
 void MultiBus::broadcastEvent(SST::Event* ev) {
-    MemEventBase* memEvent = static_cast<MemEventBase*>(ev);
-    SST::Link* srcLink = lookupNode(memEvent->getSrc());
+    SST::Link* srcLink = lookupNode(ev->getSrc());
 
     for (int i = 0; i < numHPorts_; i++) {
         if (ports_[i] == srcLink) continue;
-        ports_[i]->send(memEvent->clone());
+        ports_[i]->send(ev->clone());
     }
-
-    delete memEvent;
-}
-
-
-
-void MultiBus::sendSingleEvent(SST::Event* ev) {
-    MemEventBase *event = static_cast<MemEventBase*>(ev);
-#ifdef __SST_DEBUG_OUTPUT__
-    if (is_debug_event(event)) {
-        dbg_.debug(_L3_, "E: %-20" PRIu64 " %-20" PRId32 " %-20s Event:New     (%s)\n",
-                getCurrentSimCycle(), 0, getName().c_str(), event->getVerboseString().c_str());
-        fflush(stdout);
-    }
-#endif
-    SST::Link* dstLink = lookupNode(event->getDst());
-    MemEventBase* forwardEvent = event->clone();
-    dstLink->send(forwardEvent);
-
-    delete event;
 }
 
 /*----------------------------------------
  * Helper functions
  *---------------------------------------*/
-
 void MultiBus::mapNodeEntry(const std::string& name, SST::Link* link) {
     std::map<std::string, SST::Link*>::iterator it = nameMap_.find(name);
     if (it != nameMap_.end() ) {
@@ -148,7 +112,6 @@ void MultiBus::configureParameters(SST::Params& params) {
     latency_      = params.find<uint64_t>("bus_latency_cycles", 1);
     idleMax_      = params.find<uint64_t>("idle_max", 6);
     busFrequency_ = params.find<std::string>("bus_frequency", "Invalid");
-    broadcast_    = params.find<bool>("broadcast", 1);
     drain_        = params.find<bool>("drain_bus", 0);
 
     if (busFrequency_ == "Invalid") dbg_.fatal(CALL_INFO, -1, "Bus Frequency was not specified\n");
@@ -168,24 +131,20 @@ void MultiBus::configureParameters(SST::Params& params) {
 
 void MultiBus::init(unsigned int phase) {
     SST::Event *ev;
-
     for (int i = 0; i < numPorts_; i++) {
         while ((ev = ports_[i]->recvInitData())) {
-            MemEventInit* memEvent = dynamic_cast<MemEventInit*>(ev);
-
-            if (memEvent && memEvent->getCmd() == Command::NULLCMD) {
+            if (ev && ev->getCmd() == Command::NULLCMD) {
                 dbg_.debug(_L10_, "multiBus %s broadcasting event to all other ports (%d): %s\n", getName().c_str(), numPorts_, memEvent->getVerboseString().c_str());
-                mapNodeEntry(memEvent->getSrc(), ports_[i]);
+                mapNodeEntry(ev->getSrc(), ports_[i]);
                 for (int k = 0; k < numPorts_; k++)
                     if (ports_[k] == srcLink) continue;
-                    ports_[k]->sendInitData(memEvent->clone());
-            } else if (memEvent) {
+                    ports_[k]->sendInitData(ev->clone());
+            } else if (ev) {
                 dbg_.debug(_L10_, "multiBus %s broadcasting event to all other ports (%d): %s\n", getName().c_str(), numPorts_, memEvent->getVerboseString().c_str());
                 for (int k = 0; k < numPorts_; k++)
                     if (ports_[k] == srcLink) continue;
-                    ports_[k]->sendInitData(memEvent->clone());
+                    ports_[k]->sendInitData(ev->clone());
             }
-            delete memEvent;
         }
     }
 }
