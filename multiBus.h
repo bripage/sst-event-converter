@@ -10,9 +10,7 @@
 #include <sst/core/link.h>
 #include <sst/core/timeConverter.h>
 #include <sst/core/output.h>
-
-#include "sst/elements/memHierarchy/memEvent.h"
-#include "sst/elements/memHierarchy/util.h"
+#include "util.h"
 
 using namespace std;
 
@@ -35,7 +33,6 @@ namespace SST { namespace MultiBus {
 
             SST_ELI_DOCUMENT_PARAMS(
             {"bus_frequency",       "(string) Bus clock frequency"},
-            {"broadcast",           "(bool) If set, messages are broadcast to all other ports", "0"},
             {"bus_latency_cycles",  "(uint) Bus latency in cycles", "0"},
             {"idle_max",            "(uint) Bus temporarily turns off clock after this number of idle cycles", "6"},
             {"drain_bus",           "(bool) Drain bus on every cycle", "0"},
@@ -44,11 +41,11 @@ namespace SST { namespace MultiBus {
             {"debug_addr",          "(comma separated uints) Address(es) to be debugged. Leave empty for all, otherwise specify one or more comma separated values. Start and end string with brackets", ""} )
 
             SST_ELI_DOCUMENT_PORTS(
-            {"port%(port_number)d", "Ports connected to additional components. Can be different component types. ", {"memHierarchy.MemEventBase"} } )
+            {"port%(port_number)d", "Ports connected to additional components. Can be different component types. ", {} } )
 
 /* Class definition */
 
-            typedef MemEvent::id_type key_t;
+            typedef SST:Event::id_type key_t;
             static const key_t ANY_KEY;
             static const char BUS_INFO_STR[];
 
