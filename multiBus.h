@@ -25,7 +25,7 @@ namespace SST { namespace MultiBus {
  *  include multiple component types and or parameter settings. All messages are broadcast to all connected components.
  */
 
-        class Bus : public SST::Component {
+        class MultiBus : public SST::Component {
         public:
 
 /* Element Library Info */
@@ -45,7 +45,7 @@ namespace SST { namespace MultiBus {
 
 /* Class definition */
 
-            typedef SST:Event::id_type key_t;
+            typedef SST::Event::id_type key_t;
             static const key_t ANY_KEY;
             static const char BUS_INFO_STR[];
 
