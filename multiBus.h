@@ -10,11 +10,12 @@
 #include <sst/core/link.h>
 #include <sst/core/timeConverter.h>
 #include <sst/core/output.h>
-#include "util.h"
 
 using namespace std;
 
-namespace SST { namespace MultiBus {
+namespace SST { 
+    namespace Brianldo {
+
 
         class BusEvent;
 
@@ -28,29 +29,28 @@ namespace SST { namespace MultiBus {
         class MultiBus : public SST::Component {
         public:
 
+            MultiBus(SST::ComponentId_t id, SST::Params& params);
+            virtual void init(unsigned int phase);
+            typedef SST::Event::id_type key_t;
+            static const key_t ANY_KEY;
+            static const char BUS_INFO_STR[];
+
 /* Element Library Info */
-            SST_ELI_REGISTER_COMPONENT(MultiBus, "multiBus", "MultiBus", SST_ELI_ELEMENT_VERSION(1,0,0), "Multi component type Bus Model", COMPONENT_CATEGORY_MEMORY)
+            // SST_ELI_REGISTER_COMPONENT(MultiBus, "multiBus", "MultiBus", SST_ELI_ELEMENT_VERSION(1,0,0), "Multi component type Bus Model", COMPONENT_CATEGORY_MEMORY)
 
             SST_ELI_DOCUMENT_PARAMS(
             {"bus_frequency",       "(string) Bus clock frequency"},
             {"bus_latency_cycles",  "(uint) Bus latency in cycles", "0"},
             {"idle_max",            "(uint) Bus temporarily turns off clock after this number of idle cycles", "6"},
-            {"drain_bus",           "(bool) Drain bus on every cycle", "0"},
-            {"debug",               "(uint) Output location for debug statements. Requires core configuration flag '--enable-debug'. --0[None], 1[STDOUT], 2[STDERR], 3[FILE]--", "0"},
-            {"debug_level",         "(uint) Debugging level: 0 to 10", "0"},
-            {"debug_addr",          "(comma separated uints) Address(es) to be debugged. Leave empty for all, otherwise specify one or more comma separated values. Start and end string with brackets", ""} )
-
+            {"drain_bus",           "(bool) Drain bus on every cycle", "0"})
+           
+           
             SST_ELI_DOCUMENT_PORTS(
             {"port%(port_number)d", "Ports connected to additional components. Can be different component types. ", {} } )
 
 /* Class definition */
 
-            typedef SST::Event::id_type key_t;
-            static const key_t ANY_KEY;
-            static const char BUS_INFO_STR[];
-
-            MultiBus(SST::ComponentId_t id, SST::Params& params);
-            virtual void init(unsigned int phase);
+            
 
         private:
 
@@ -75,7 +75,6 @@ namespace SST { namespace MultiBus {
 
 
             Output                          dbg_;
-            std::set<Addr>                  DEBUG_ADDR;
             int                             numPorts_;
             uint64_t                        idleCount_;
             uint64_t                        latency_;
@@ -83,7 +82,7 @@ namespace SST { namespace MultiBus {
             bool                            broadcast_;
             bool                            busOn_;
             bool                            drain_;
-            Clock::Handler<Bus>*            clockHandler_;
+            Clock::Handler<MultiBus>*            clockHandler_;
             TimeConverter*                  defaultTimeBase_;
 
             std::string                     busFrequency_;
