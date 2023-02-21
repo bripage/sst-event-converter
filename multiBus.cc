@@ -1,16 +1,16 @@
-#include <sst_config.h>
-#include <sstream>
-#include "multiBus.h"
+#include <sst/core/sst_config.h>
 #include <sst/core/params.h>
 #include <sst/core/interfaces/stringEvent.h>
 #include <sst/core/event.h>
+#include <sstream>
 
+#include "multiBus.h"
 using namespace std;
-using namespace SST;
+using namespace SST::Brianldo;
 
-const MultiBus::key_t MultiBus::ANY_KEY = std::pair<uint64_t, int>((uint64_t)-1, -1);
+const SST::Event::id_type ANY_KEY = pair<uint64_t, int>((uint64_t)-1, -1);
 
-MultiBus::MultiBus(ComponentId_t id, Params& params) : Component(id) {
+MultiBus::MultiBus(SST::ComponentId_t id, SST::Params& params) : Component(id) {
     configureParameters(params);
     configureLinks();
     idleCount_ = 0;
@@ -50,9 +50,9 @@ bool MultiBus::clockTick(Cycle_t time) {
 }
 
 void MultiBus::broadcastEvent(SST::Event* ev) {
-    SST::Link* srcLink = lookupNode(ev->getSrc());
+    SST::Link* srcLink = lookupNode(ev->);
 
-    for (int i = 0; i < numHPorts_; i++) {
+    for (int i = 0; i < numPorts_; i++) {
         if (ports_[i] == srcLink) continue;
         ports_[i]->send(ev->clone());
     }
@@ -97,16 +97,8 @@ void MultiBus::configureLinks() {
 }
 
 void MultiBus::configureParameters(SST::Params& params) {
-    int debugLevel = params.find<int>("debug_level", 0);
-
-    dbg_.init("", debugLevel, 0, (Output::output_location_t)params.find<int>("debug", 0));
-    if (debugLevel < 0 || debugLevel > 10)     dbg_.fatal(CALL_INFO, -1, "Debugging level must be between 0 and 10. \n");
-
-    std::vector<Addr> addrArr;
-    params.find_array<Addr>("debug_addr", addrArr);
-    for (std::vector<Addr>::iterator it = addrArr.begin(); it != addrArr.end(); it++)
-        DEBUG_ADDR.insert(*it);
-
+      
+    
     numPorts_  = 0;
 
     latency_      = params.find<uint64_t>("bus_latency_cycles", 1);
@@ -134,16 +126,16 @@ void MultiBus::init(unsigned int phase) {
     for (int i = 0; i < numPorts_; i++) {
         while ((ev = ports_[i]->recvInitData())) {
             if (ev && ev->getCmd() == Command::NULLCMD) {
-                dbg_.debug(_L10_, "multiBus %s broadcasting event to all other ports (%d): %s\n", getName().c_str(), numPorts_, memEvent->getVerboseString().c_str());
                 mapNodeEntry(ev->getSrc(), ports_[i]);
-                for (int k = 0; k < numPorts_; k++)
+                for (int k = 0; k < numPorts_; k++) {
                     if (ports_[k] == srcLink) continue;
                     ports_[k]->sendInitData(ev->clone());
+                }
             } else if (ev) {
-                dbg_.debug(_L10_, "multiBus %s broadcasting event to all other ports (%d): %s\n", getName().c_str(), numPorts_, memEvent->getVerboseString().c_str());
-                for (int k = 0; k < numPorts_; k++)
+                for (int k = 0; k < numPorts_; k++) {
                     if (ports_[k] == srcLink) continue;
                     ports_[k]->sendInitData(ev->clone());
+                }
             }
         }
     }
