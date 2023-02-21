@@ -175,7 +175,7 @@ mc1.addParams({
 })
 # End MC and DC components
 
-bus = sst.Component("bus", "multiBus")
+bus = sst.Component("bus", "multiBus.SimpleBus")
 bus.addParams({
     "bus_frequency": "4GHz",
     "debug": 1,
