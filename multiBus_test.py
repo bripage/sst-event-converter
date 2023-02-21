@@ -177,11 +177,16 @@ mc1.addParams({
 
 bus = sst.Component("bus", "multiBus")
 bus.addParams({
-
+    "bus_frequency": "4GHz",
+    "debug": 1,
+    "debug_level": 10
 })
 
-C2toDC = sst.Link("C2toDC")
-C2toDC.connect((rtr2, "port4", "300ps"), (dc1, "network", "300ps"))
+R2toDC = sst.Link("R2toDC")
+R2toDC.connect((rtr2, "port2", "300ps"), (bus, "port0", "300ps"))
+
+BtoDC = sst.Link("BtoDC")
+BtoDC.connect((bus, "port1", "300ps"), (dc1, "network", "300ps"))
 
 DCtoMC = sst.Link("DCtoMC")
 DCtoMC.connect((dc1, "memory", "300ps"), (mc1, "direct_link", "300ps"))
