@@ -50,10 +50,10 @@ bool MultiBus::clockTick(Cycle_t time) {
 }
 
 void MultiBus::broadcastEvent(SST::Event* ev) {
-    SST::Link* srcLink = lookupNode(ev->);
+    //SST::Link* srcLink = lookupNode(ev->);
 
     for (int i = 0; i < numPorts_; i++) {
-        if (ports_[i] == srcLink) continue;
+        //if (ports_[i] == srcLink) continue;
         ports_[i]->send(ev->clone());
     }
 }
@@ -125,18 +125,18 @@ void MultiBus::init(unsigned int phase) {
     SST::Event *ev;
     for (int i = 0; i < numPorts_; i++) {
         while ((ev = ports_[i]->recvInitData())) {
-            if (ev && ev->getCmd() == Command::NULLCMD) {
+            /* if (ev && ev->getCmd() == Command::NULLCMD) {
                 mapNodeEntry(ev->getSrc(), ports_[i]);
                 for (int k = 0; k < numPorts_; k++) {
                     if (ports_[k] == srcLink) continue;
                     ports_[k]->sendInitData(ev->clone());
                 }
-            } else if (ev) {
+            } else if (ev) { */
                 for (int k = 0; k < numPorts_; k++) {
-                    if (ports_[k] == srcLink) continue;
+                  //  if (ports_[k] == srcLink) continue;
                     ports_[k]->sendInitData(ev->clone());
                 }
-            }
+            //}
         }
     }
 }

@@ -1,36 +1,16 @@
-#
-# src/Makefile
-#
-
-
-ifeq (, $(shell which sst-config))
- $(error "No sst-config in $(PATH), add `sst-config` to your PATH")
-endif
 
 CXX=$(shell sst-config --CXX)
 CXXFLAGS=$(shell sst-config --ELEMENT_CXXFLAGS)
 LDFLAGS=$(shell sst-config --ELEMENT_LDFLAGS)
-CPPFLAGS=-I./
-OPTIMIZE_FLAGS=-O2
 
-COMPONENT_LIB=multibus_lib.so
+all: libmultiBus.so install
 
-BASICCOMPONENT_SOURCES := $(wildcard *.cc)
+libmultiBus.so: multiBus.cc
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
 
-BASICCOMPONENT_HEADERS := $(wildcard *.h)
+install:
+	sst-register multiBus multiBus_LIBDIR=$(CURDIR)
+	sst-register SST_ELEMENT_SOURCE multiBus=$(CURDIR)
 
-BASICCOMPONENT_OBJS := $(patsubst %.cc,%.o,$(wildcard *.cc))
-
-all: $(COMPONENT_LIB)
-
-debug: CXXFLAGS += -DDEBUG -g
-debug: $(COMPONENT_LIB)
-
-$(COMPONENT_LIB): $(BASICCOMPONENT_OBJS)
-		$(CXX) $(OPTIMIZE_FLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ *.o
-%.o:%.cc $(SIMPLEEXAMPLE_HEADERS)
-		$(CXX) $(OPTIMIZE_FLAGS) $(CXXFLAGS) $(CPPFLAGS) -c $<
-install: $(COMPONENT_LIB)
-		sst-register multibus multibus_LIBDIR=$(CURDIR)
 clean:
-		rm -Rf *.o $(COMPONENT_LIB)
+	rm -f *.o libmultiBus.so
