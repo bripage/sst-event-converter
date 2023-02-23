@@ -11,7 +11,7 @@ using namespace SST::MultiBus;
 
 const SST::Event::id_type ANY_KEY = pair<uint64_t, int>((uint64_t)-1, -1);
 
-multiBus::multiBus(SST::ComponentId_t id, SST::Params& params) : SST::Component(id) {
+MultiBus::MultiBus(SST::ComponentId_t id, SST::Params& params) : SST::Component(id) {
     configureParameters(params);
     configureLinks();
     idleCount_ = 0;
@@ -20,7 +20,7 @@ multiBus::multiBus(SST::ComponentId_t id, SST::Params& params) : SST::Component(
     primaryComponentDoNotEndSim();
 }
 
-void multiBus::processIncomingEvent(Event* ev) {
+void MultiBus::processIncomingEvent(Event* ev) {
     eventQueue_.push(ev);
     if (!busOn_) {
         reregisterClock(defaultTimeBase_, clockHandler_);
@@ -29,7 +29,7 @@ void multiBus::processIncomingEvent(Event* ev) {
     }
 }
 
-bool multiBus::clockTick(Cycle_t time) {
+bool MultiBus::clockTick(Cycle_t time) {
     if (eventQueue_.empty())
         idleCount_++;
 
@@ -53,7 +53,7 @@ bool multiBus::clockTick(Cycle_t time) {
     return false;
 }
 
-void multiBus::broadcastEvent(SST::Event* ev) {
+void MultiBus::broadcastEvent(SST::Event* ev) {
     // SST::Link* srcLink = lookupNode(ev->);
 
     for (int i = 0; i < numPorts_; i++) {
@@ -65,7 +65,7 @@ void multiBus::broadcastEvent(SST::Event* ev) {
 /*----------------------------------------
  * Helper functions
  *---------------------------------------*/
-void multiBus::mapNodeEntry(const std::string& name, SST::Link* link) {
+void MultiBus::mapNodeEntry(const std::string& name, SST::Link* link) {
     std::map<std::string, SST::Link*>::iterator it = nameMap_.find(name);
     if (it != nameMap_.end() ) {
         if (it->second != link)
@@ -75,7 +75,7 @@ void multiBus::mapNodeEntry(const std::string& name, SST::Link* link) {
     nameMap_[name] = link;
 }
 
-SST::Link* multiBus::lookupNode(const std::string& name) {
+SST::Link* MultiBus::lookupNode(const std::string& name) {
     std::map<std::string, SST::Link*>::iterator it = nameMap_.find(name);
     if (nameMap_.end() == it) {
         dbg_.fatal(CALL_INFO, -1, "%s, Error: MultiBus lookup of node %s returned no mapping\n", getName().c_str(), name.c_str());
@@ -83,7 +83,7 @@ SST::Link* multiBus::lookupNode(const std::string& name) {
     return it->second;
 }
 
-void multiBus::configureLinks() {
+void MultiBus::configureLinks() {
     SST::Link* link;
     std::string linkprefix = "port";
     std::string linkname = linkprefix + "0";
@@ -100,7 +100,7 @@ void multiBus::configureLinks() {
 
 }
 
-void multiBus::configureParameters(Params& params) {
+void MultiBus::configureParameters(Params& params) {
       
     
     numPorts_  = 0;
@@ -125,7 +125,7 @@ void multiBus::configureParameters(Params& params) {
     defaultTimeBase_ = registerClock(busFrequency_, clockHandler_);
 }
 
-void multiBus::init(unsigned int phase) {
+void MultiBus::init(unsigned int phase) {
     SST::Event *ev;
     for (int i = 0; i < numPorts_; i++) {
         while ((ev = ports_[i]->recvInitData())) {

@@ -3,7 +3,6 @@
 
 #include <queue>
 #include <map>
-
 #include <sst/core/event.h>
 #include <sst/core/sst_types.h>
 #include <sst/core/component.h>
@@ -27,42 +26,35 @@ namespace SST {
  *  include multiple component types and or parameter settings. All messages are broadcast to all connected components.
  */
 
-        class multiBus : public SST::Component {
+        class MultiBus : public SST::Component {
         public:
 
             // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
             SST_ELI_REGISTER_COMPONENT(
-            multiBus,
+                    MultiBus,
             "multiBus",
-            "multiBus",
+            "MultiBus",
             SST_ELI_ELEMENT_VERSION(1,0,0),
             "multiBus Demo Component",
             COMPONENT_CATEGORY_PROCESSOR
             )
 
-            multiBus(SST::ComponentId_t id, SST::Params& params);
+            MultiBus(SST::ComponentId_t id, SST::Params& params);
             virtual void init(unsigned int phase);
             typedef SST::Event::id_type key_t;
             static const key_t ANY_KEY;
             static const char BUS_INFO_STR[];
-
-/* Element Library Info */
-            // SST_ELI_REGISTER_COMPONENT(MultiBus, "multiBus", "MultiBus", SST_ELI_ELEMENT_VERSION(1,0,0), "Multi component type Bus Model", COMPONENT_CATEGORY_MEMORY)
 
             SST_ELI_DOCUMENT_PARAMS(
             {"bus_frequency",       "(string) Bus clock frequency"},
             {"bus_latency_cycles",  "(uint) Bus latency in cycles", "0"},
             {"idle_max",            "(uint) Bus temporarily turns off clock after this number of idle cycles", "6"},
             {"drain_bus",           "(bool) Drain bus on every cycle", "0"})
-           
-           
+
             SST_ELI_DOCUMENT_PORTS(
             {"port%(port_number)d", "Ports connected to additional components. Can be different component types. ", {} } )
 
 /* Class definition */
-
-            
-
         private:
 
             /** Adds event to the incoming event queue.  Reregisters clock if needed */
@@ -93,7 +85,7 @@ namespace SST {
             bool                            broadcast_;
             bool                            busOn_;
             bool                            drain_;
-            Clock::Handler<multiBus>*            clockHandler_;
+            Clock::Handler<MultiBus>*            clockHandler_;
             TimeConverter*                  defaultTimeBase_;
 
             std::string                     busFrequency_;
