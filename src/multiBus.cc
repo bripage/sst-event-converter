@@ -88,7 +88,7 @@ void MultiBus::configureLinks() {
     std::string linkprefix = "port";
     std::string linkname = linkprefix + "0";
     while (isPortConnected(linkname)) {
-        link = configureLink(linkname, "50 ps", new Event::Handler<multiBus>(this, &multiBus::processIncomingEvent));
+        link = configureLink(linkname, "50 ps", new Event::Handler<MultiBus>(this, &MultiBus::processIncomingEvent));
         if (!link)
             dbg_.fatal(CALL_INFO, -1, "%s, Error: unable to configure link on port '%s'\n", getName().c_str(), linkname.c_str());
         ports_.push_back(link);
@@ -121,7 +121,7 @@ void MultiBus::configureParameters(Params& params) {
     uA = uA * 2;
     busFrequency_ = uA.toString();
 
-    clockHandler_ = new Clock::Handler<multiBus>(this, &multiBus::clockTick);
+    clockHandler_ = new Clock::Handler<multMultiBusiBus>(this, &MultiBus::clockTick);
     defaultTimeBase_ = registerClock(busFrequency_, clockHandler_);
 }
 
