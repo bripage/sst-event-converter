@@ -3,22 +3,24 @@
 #include <sst/core/interfaces/stringEvent.h>
 #include <sst/core/event.h>
 #include <sstream>
-#include <iostream>
-#include "multiBus.h"
+#include <sst/core/timeConverter.h>
 
+#include "multiBus.h"
 using namespace std;
 using namespace SST::MultiBus;
 
 const SST::Event::id_type ANY_KEY = pair<uint64_t, int>((uint64_t)-1, -1);
 
-MultiBus::MultiBus(SST::ComponentId_t id, SST::Params& params) : Component(id) {
+multiBus::multiBus(SST::ComponentId_t id, SST::Params& params) : SST::Component(id) {
     configureParameters(params);
     configureLinks();
     idleCount_ = 0;
     busOn_ = true;
+    registerAsPrimaryComponent();
+    primaryComponentDoNotEndSim();
 }
 
-void MultiBus::processIncomingEvent(SST::Event* ev) {
+void multiBus::processIncomingEvent(Event* ev) {
     eventQueue_.push(ev);
     if (!busOn_) {
         reregisterClock(defaultTimeBase_, clockHandler_);
@@ -27,13 +29,14 @@ void MultiBus::processIncomingEvent(SST::Event* ev) {
     }
 }
 
-bool MultiBus::clockTick(Cycle_t time) {
+bool multiBus::clockTick(Cycle_t time) {
     if (eventQueue_.empty())
         idleCount_++;
 
     if (idleCount_ > idleMax_) {
         busOn_ = false;
         idleCount_ = 0;
+        primaryComponentOKToEndSim();
         return true;
     }
 
@@ -46,25 +49,23 @@ bool MultiBus::clockTick(Cycle_t time) {
         if (drain_ == 0 )
             break;
     }
-
+    primaryComponentOKToEndSim();
     return false;
 }
 
-void MultiBus::broadcastEvent(SST::Event* ev) {
-    //SST::Link* srcLink = lookupNode(ev->getLastPort());
+void multiBus::broadcastEvent(SST::Event* ev) {
+    // SST::Link* srcLink = lookupNode(ev->);
 
     for (int i = 0; i < numPorts_; i++) {
-        //if (ports_[i] == srcLink) continue;
-        SST::Event* newEV = ev;
-        ports_[i]->send(newEV);
+        // if (ports_[i] == srcLink) continue;
+        ports_[i]->send(ev->clone());
     }
-
 }
 
 /*----------------------------------------
  * Helper functions
  *---------------------------------------*/
-void MultiBus::mapNodeEntry(const std::string& name, SST::Link* link) {
+void multiBus::mapNodeEntry(const std::string& name, SST::Link* link) {
     std::map<std::string, SST::Link*>::iterator it = nameMap_.find(name);
     if (it != nameMap_.end() ) {
         if (it->second != link)
@@ -74,7 +75,7 @@ void MultiBus::mapNodeEntry(const std::string& name, SST::Link* link) {
     nameMap_[name] = link;
 }
 
-SST::Link* MultiBus::lookupNode(const std::string& name) {
+SST::Link* multiBus::lookupNode(const std::string& name) {
     std::map<std::string, SST::Link*>::iterator it = nameMap_.find(name);
     if (nameMap_.end() == it) {
         dbg_.fatal(CALL_INFO, -1, "%s, Error: MultiBus lookup of node %s returned no mapping\n", getName().c_str(), name.c_str());
@@ -82,14 +83,12 @@ SST::Link* MultiBus::lookupNode(const std::string& name) {
     return it->second;
 }
 
-void MultiBus::configureLinks() {
-    std::cout << "Begining configureLinks()" << std::endl;
-
+void multiBus::configureLinks() {
     SST::Link* link;
     std::string linkprefix = "port";
     std::string linkname = linkprefix + "0";
     while (isPortConnected(linkname)) {
-        link = configureLink(linkname, "50 ps", new Event::Handler<MultiBus>(this, &MultiBus::processIncomingEvent));
+        link = configureLink(linkname, "50 ps", new Event::Handler<multiBus>(this, &multiBus::processIncomingEvent));
         if (!link)
             dbg_.fatal(CALL_INFO, -1, "%s, Error: unable to configure link on port '%s'\n", getName().c_str(), linkname.c_str());
         ports_.push_back(link);
@@ -98,11 +97,14 @@ void MultiBus::configureLinks() {
     }
 
     if (numPorts_ < 1) dbg_.fatal(CALL_INFO, -1,"couldn't find number of Ports (numPorts)\n");
-    std::cout << "ConfigLinks() done" << std::endl;
+
 }
 
-void MultiBus::configureParameters(SST::Params& params) {
+void multiBus::configureParameters(Params& params) {
+      
+    
     numPorts_  = 0;
+
     latency_      = params.find<uint64_t>("bus_latency_cycles", 1);
     idleMax_      = params.find<uint64_t>("idle_max", 6);
     busFrequency_ = params.find<std::string>("bus_frequency", "Invalid");
@@ -119,7 +121,29 @@ void MultiBus::configureParameters(SST::Params& params) {
     uA = uA * 2;
     busFrequency_ = uA.toString();
 
-    clockHandler_ = new Clock::Handler<MultiBus>(this, &MultiBus::clockTick);
+    clockHandler_ = new Clock::Handler<multiBus>(this, &multiBus::clockTick);
     defaultTimeBase_ = registerClock(busFrequency_, clockHandler_);
 }
+
+void multiBus::init(unsigned int phase) {
+    SST::Event *ev;
+    for (int i = 0; i < numPorts_; i++) {
+        while ((ev = ports_[i]->recvInitData())) {
+            // if (ev && ev->getCmd() == Command::NULLCMD) {
+            //     mapNodeEntry(ev->getSrc(), ports_[i]);
+            //     for (int k = 0; k < numPorts_; k++) {
+            //         // if (ports_[k] == srcLink) continue;
+            //         ports_[k]->sendInitData(ev->clone());
+            //     }
+            // } else 
+            if (ev) {
+                for (int k = 0; k < numPorts_; k++) {
+                    // if (ports_[k] == srcLink) continue;
+                    ports_[k]->sendInitData(ev->clone());
+                }
+            }
+        }
+    }
+}
+
 
