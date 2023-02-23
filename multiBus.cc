@@ -3,10 +3,11 @@
 #include <sst/core/interfaces/stringEvent.h>
 #include <sst/core/event.h>
 #include <sstream>
-
+#include <iostream>
 #include "multiBus.h"
+
 using namespace std;
-using namespace SST::Brianldo;
+using namespace SST::MultiBus;
 
 const SST::Event::id_type ANY_KEY = pair<uint64_t, int>((uint64_t)-1, -1);
 
@@ -50,12 +51,14 @@ bool MultiBus::clockTick(Cycle_t time) {
 }
 
 void MultiBus::broadcastEvent(SST::Event* ev) {
-    SST::Link* srcLink = lookupNode(ev->);
+    //SST::Link* srcLink = lookupNode(ev->getLastPort());
 
     for (int i = 0; i < numPorts_; i++) {
-        if (ports_[i] == srcLink) continue;
-        ports_[i]->send(ev->clone());
+        //if (ports_[i] == srcLink) continue;
+        SST::Event* newEV = ev;
+        ports_[i]->send(newEV);
     }
+
 }
 
 /*----------------------------------------
@@ -80,6 +83,8 @@ SST::Link* MultiBus::lookupNode(const std::string& name) {
 }
 
 void MultiBus::configureLinks() {
+    std::cout << "Begining configureLinks()" << std::endl;
+
     SST::Link* link;
     std::string linkprefix = "port";
     std::string linkname = linkprefix + "0";
@@ -93,14 +98,11 @@ void MultiBus::configureLinks() {
     }
 
     if (numPorts_ < 1) dbg_.fatal(CALL_INFO, -1,"couldn't find number of Ports (numPorts)\n");
-
+    std::cout << "ConfigLinks() done" << std::endl;
 }
 
 void MultiBus::configureParameters(SST::Params& params) {
-      
-    
     numPorts_  = 0;
-
     latency_      = params.find<uint64_t>("bus_latency_cycles", 1);
     idleMax_      = params.find<uint64_t>("idle_max", 6);
     busFrequency_ = params.find<std::string>("bus_frequency", "Invalid");
@@ -119,24 +121,4 @@ void MultiBus::configureParameters(SST::Params& params) {
 
     clockHandler_ = new Clock::Handler<MultiBus>(this, &MultiBus::clockTick);
     defaultTimeBase_ = registerClock(busFrequency_, clockHandler_);
-}
-
-void MultiBus::init(unsigned int phase) {
-    SST::Event *ev;
-    for (int i = 0; i < numPorts_; i++) {
-        while ((ev = ports_[i]->recvInitData())) {
-            if (ev && ev->getCmd() == Command::NULLCMD) {
-                mapNodeEntry(ev->getSrc(), ports_[i]);
-                for (int k = 0; k < numPorts_; k++) {
-                    if (ports_[k] == srcLink) continue;
-                    ports_[k]->sendInitData(ev->clone());
-                }
-            } else if (ev) {
-                for (int k = 0; k < numPorts_; k++) {
-                    if (ports_[k] == srcLink) continue;
-                    ports_[k]->sendInitData(ev->clone());
-                }
-            }
-        }
-    }
 }
