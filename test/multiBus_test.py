@@ -21,7 +21,7 @@ sst.setProgramOption("stop-at", "10s")
 # gen.addParams({
 #     "generatorParams.verbose" : 1
 # })
-# 
+#
 # L1_1 = sst.Component("L1_1", "memHierarchy.Cache")
 # L1_1.addParams({
 #     "cache_frequency": "2GHz",
@@ -30,7 +30,7 @@ sst.setProgramOption("stop-at", "10s")
 #     "access_latency_cycles": 4,
 #     "L1": 1
 # })
-# 
+#
 # L2_1 = sst.Component("L2_1", "memHierarchy.Cache")
 # L2_1.addParams({
 #     "prefetcher": "cassini.StridePrefetcher",
@@ -44,8 +44,8 @@ sst.setProgramOption("stop-at", "10s")
 #     "mshr_latency_cycles": 2,
 #     "memNIC.network_bw": "51.2GB/s"
 # })
-# 
-# 
+#
+#
 # C1toL1 = sst.Link("C1toL1")
 # C1toL1.connect( (core1, "cache_link", "300ps"), (L1_1, "high_network_0", "300ps") )
 # C1_L1toL2 = sst.Link("C1_L1toL2")
@@ -68,7 +68,7 @@ sst.setProgramOption("stop-at", "10s")
 # gen.addParams({
 #     "generatorParams.verbose" : 1
 # })
-# 
+#
 # L1_2 = sst.Component("L1_2", "memHierarchy.Cache")
 # L1_2.addParams({
 #     "cache_frequency": "2GHz",
@@ -77,7 +77,7 @@ sst.setProgramOption("stop-at", "10s")
 #     "access_latency_cycles": 4,
 #     "L1": 1
 # })
-# 
+#
 # L2_2 = sst.Component("L2_2", "memHierarchy.Cache")
 # L2_2.addParams({
 #     "prefetcher": "cassini.StridePrefetcher",
@@ -91,8 +91,8 @@ sst.setProgramOption("stop-at", "10s")
 #     "mshr_latency_cycles": 2,
 #     "memNIC.network_bw": "51.2GB/s"
 # })
-# 
-# 
+#
+#
 # C2toL1 = sst.Link("C2toL1")
 # C2toL1.connect( (core2, "cache_link", "300ps"), (L1_2, "high_network_0", "300ps") )
 # C2_L1toL2 = sst.Link("C2_L1toL2")
@@ -176,14 +176,14 @@ mc1.addParams({
 
 bus = sst.Component("bus", "multiBus.MultiBus")
 bus.addParams({
-    "busFrequency": "4GHz",
+    "bus_frequency": "4GHz",
     "debug": 1,
     "debug_level": 10
 })
 
 # C1_CtoBus = sst.Link("C1_CtoBus")
 # C1_CtoBus.connect((L2_1, "directory", "300ps"), (bus, "port0", "300ps"))
-# 
+#
 # C2_CtoBus = sst.Link("C2_CtoBus")
 # C2_CtoBus.connect((L2_2, "directory", "300ps"), (bus, "port1", "300ps"))
 
@@ -195,4 +195,3 @@ BtoDC.connect((bus, "port2", "300ps"), (dc1, "network", "300ps"))
 
 DCtoMC = sst.Link("DCtoMC")
 DCtoMC.connect((dc1, "memory", "300ps"), (mc1, "direct_link", "300ps"))
-
