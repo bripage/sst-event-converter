@@ -51,20 +51,12 @@ bool MultiBus::clockTick(Cycle_t time) {
 }
 
 void MultiBus::broadcastEvent(SST::Event* ev) {
-<<<<<<< HEAD
-    //SST::Link* srcLink = lookupNode(ev->);
-
-    for (int i = 0; i < numPorts_; i++) {
-        //if (ports_[i] == srcLink) continue;
-        ports_[i]->send(ev->clone());
-=======
     //SST::Link* srcLink = lookupNode(ev->getLastPort());
 
     for (int i = 0; i < numPorts_; i++) {
         //if (ports_[i] == srcLink) continue;
         SST::Event* newEV = ev;
         ports_[i]->send(newEV);
->>>>>>> e8a8de7b3ef993d082c2ea32dd74300be10bb127
     }
 
 }
@@ -130,26 +122,4 @@ void MultiBus::configureParameters(SST::Params& params) {
     clockHandler_ = new Clock::Handler<MultiBus>(this, &MultiBus::clockTick);
     defaultTimeBase_ = registerClock(busFrequency_, clockHandler_);
 }
-<<<<<<< HEAD
 
-void MultiBus::init(unsigned int phase) {
-    SST::Event *ev;
-    for (int i = 0; i < numPorts_; i++) {
-        while ((ev = ports_[i]->recvInitData())) {
-            /* if (ev && ev->getCmd() == Command::NULLCMD) {
-                mapNodeEntry(ev->getSrc(), ports_[i]);
-                for (int k = 0; k < numPorts_; k++) {
-                    if (ports_[k] == srcLink) continue;
-                    ports_[k]->sendInitData(ev->clone());
-                }
-            } else if (ev) { */
-                for (int k = 0; k < numPorts_; k++) {
-                  //  if (ports_[k] == srcLink) continue;
-                    ports_[k]->sendInitData(ev->clone());
-                }
-            //}
-        }
-    }
-}
-=======
->>>>>>> e8a8de7b3ef993d082c2ea32dd74300be10bb127

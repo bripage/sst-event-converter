@@ -1,15 +1,12 @@
 #ifndef SST_MULTIBUS_H
 #define SST_MULTIBUS_H
-
 /*
  *  Component: multiBus
  *
  *  Connects two or more components over a bus like interface. The component types need not be the same type and may
  *  include multiple component types and or parameter settings. All messages are broadcast to all connected components.
  */
-
 #include <sst/core/component.h>
-#include "multiBusEvent.h"
 
 using namespace SST;
 using namespace SST::Interfaces;
@@ -19,7 +16,6 @@ namespace SST {
 
         class MultiBus : public SST::Component {
         public:
-
             // Class members
 
             // Constructor: Components receive a unique ID and the set of parameters
@@ -62,3 +58,4 @@ namespace SST {
 }
 
 #endif /* SST_MULTIBUS_H */
+
