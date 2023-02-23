@@ -1,65 +1,109 @@
-#ifndef SST_MULTIBUS_H
-#define SST_MULTIBUS_H
+#ifndef _NEWMULTIBUS_H
+#define _NEWMULTIBUS_H
+
+#include <queue>
+#include <map>
+
+#include <sst/core/event.h>
+#include <sst/core/sst_types.h>
+#include <sst/core/component.h>
+#include <sst/core/link.h>
+#include <sst/core/timeConverter.h>
+#include <sst/core/output.h>
+#include <sst/core/eli/elementinfo.h>
+
+using namespace std;
+
+namespace SST { 
+    namespace MultiBus {
+
+
+        class BusEvent;
+
 /*
  *  Component: multiBus
  *
  *  Connects two or more components over a bus like interface. The component types need not be the same type and may
  *  include multiple component types and or parameter settings. All messages are broadcast to all connected components.
  */
-#include <sst/core/component.h>
-#include <queue>
-#include <map>
-#include <string>
 
-using namespace std;
-using namespace SST;
-using namespace SST::Interfaces;
-
-namespace SST {
-    namespace MultiBus {
-
-        class MultiBus : public SST::Component {
+        class multiBus : public SST::Component {
         public:
-            // Class members
 
-            // Constructor: Components receive a unique ID and the set of parameters
-            //              that were assigned in the simulation configuration script
-            MultiBus(SST::ComponentId_t id, SST::Params& params);
+            // REGISTER THIS COMPONENT INTO THE ELEMENT LIBRARY
+            SST_ELI_REGISTER_COMPONENT(
+            multiBus,
+            "multiBus",
+            "multiBus",
+            SST_ELI_ELEMENT_VERSION(1,0,0),
+            "multiBus Demo Component",
+            COMPONENT_CATEGORY_PROCESSOR
+            )
 
-            // Destructor
-            ~MultiBus();
+            multiBus(SST::ComponentId_t id, SST::Params& params);
+            virtual void init(unsigned int phase);
+            typedef SST::Event::id_type key_t;
+            static const key_t ANY_KEY;
+            static const char BUS_INFO_STR[];
 
-            /* Element Library Info */
-            SST_ELI_REGISTER_COMPONENT(MultiBus,
-            "multiBus", "MultiBus", SST_ELI_ELEMENT_VERSION(1,0,0), "Multi component type Bus Model", COMPONENT_CATEGORY_MEMORY)
+/* Element Library Info */
+            // SST_ELI_REGISTER_COMPONENT(MultiBus, "multiBus", "MultiBus", SST_ELI_ELEMENT_VERSION(1,0,0), "Multi component type Bus Model", COMPONENT_CATEGORY_MEMORY)
 
             SST_ELI_DOCUMENT_PARAMS(
-            { "bus_frequency", "(string) Bus clock frequency" },
-            { "bus_latency_cycles", "(uint) Bus latency in cycles", "0" },
-            { "idle_max", "(uint) Bus temporarily turns off clock after this number of idle cycles", "6" },
-            { "drain_bus", "(bool) Drain bus on every cycle", "0" })
-
+            {"bus_frequency",       "(string) Bus clock frequency"},
+            {"bus_latency_cycles",  "(uint) Bus latency in cycles", "0"},
+            {"idle_max",            "(uint) Bus temporarily turns off clock after this number of idle cycles", "6"},
+            {"drain_bus",           "(bool) Drain bus on every cycle", "0"})
+           
+           
             SST_ELI_DOCUMENT_PORTS(
-            { "port%(port_number)d", "Ports connected to additional components. Can be different component types. ", {}} )
+            {"port%(port_number)d", "Ports connected to additional components. Can be different component types. ", {} } )
+
+/* Class definition */
+
+            
 
         private:
-            // Params
-            TimeConverter* timeConverter;
-            Clock::HandlerBase* clockHandler;
-            std::string busFrequency;
-            std::string bus_latency_cycles;
-            std::vector<SST::Link *> ports_;
-            std::map<string, SST::Link *> nameMap_;
-            std::queue<SST::Event *> eventQueue_;
-            Output* out;
 
-            //void handleEvent( StandardMem::Request* ev );
-            bool clockTick( SST::Cycle_t );
-            void handleSrcEvent( SST::Event* );
+            /** Adds event to the incoming event queue.  Reregisters clock if needed */
+            void processIncomingEvent(SST::Event *ev);
+
+            /** Send event to a single destination */
+            void sendSingleEvent(SST::Event *ev);
+
+            /** Broadcast event to all ports */
+            void broadcastEvent(SST::Event *ev);
+
+            /**  Clock Handler */
+            bool clockTick(Cycle_t);
+
+            /** Configure Bus objects with the appropriate parameters */
+            void configureParameters(SST::Params&);
+            void configureLinks();
+
+            void mapNodeEntry(const std::string&, SST::Link*);
+            SST::Link* lookupNode(const std::string&);
+
+
+            Output                          dbg_;
+            int                             numPorts_;
+            uint64_t                        idleCount_;
+            uint64_t                        latency_;
+            uint64_t                        idleMax_;
+            bool                            broadcast_;
+            bool                            busOn_;
+            bool                            drain_;
+            Clock::Handler<multiBus>*            clockHandler_;
+            TimeConverter*                  defaultTimeBase_;
+
+            std::string                     busFrequency_;
+            std::string                     bus_latency_cycles_;
+            std::vector<SST::Link*>         ports_;
+            std::map<string,SST::Link*>     nameMap_;
+            std::queue<SST::Event*>         eventQueue_;
+
         };
 
-    }
-}
-
+    }}
 #endif /* SST_MULTIBUS_H */
 
