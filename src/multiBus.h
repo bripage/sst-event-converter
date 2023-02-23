@@ -7,7 +7,11 @@
  *  include multiple component types and or parameter settings. All messages are broadcast to all connected components.
  */
 #include <sst/core/component.h>
+#include <queue>
+#include <map>
+#include <string>
 
+using namespace std;
 using namespace SST;
 using namespace SST::Interfaces;
 
@@ -49,7 +53,7 @@ namespace SST {
             std::queue<SST::Event *> eventQueue_;
             Output* out;
 
-            void handleEvent( StandardMem::Request* ev );
+            //void handleEvent( StandardMem::Request* ev );
             bool clockTick( SST::Cycle_t );
             void handleSrcEvent( SST::Event* );
         };
