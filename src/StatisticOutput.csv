@@ -1,0 +1,7 @@
+ComponentName, StatisticName, StatisticSubId, StatisticType, SimTime, Rank, Sum.u64, SumSQ.u64, Count.u64, Min.u64, Max.u64, Sum.u32, SumSQ.u32, Min.u32, Max.u32
+ClockComponent0, EvenCycleCounter, , Accumulator, 667000, 0, 500, 500, 500, 1, 1, 0, 0, 0, 0
+ClockComponent0, OddCycleCounter, , Accumulator, 667000, 0, 500, 500, 500, 1, 1, 0, 0, 0, 0
+ClockComponent0, HundredCycleCounter, , Accumulator, 667000, 0, 0, 0, 10, 0, 0, 10, 10, 1, 1
+ClockComponent1, EvenCycleCounter, , Accumulator, 667000, 0, 500, 500, 500, 1, 1, 0, 0, 0, 0
+ClockComponent1, OddCycleCounter, , Accumulator, 667000, 0, 500, 500, 500, 1, 1, 0, 0, 0, 0
+ClockComponent1, HundredCycleCounter, , Accumulator, 667000, 0, 0, 0, 10, 0, 0, 10, 10, 1, 1
