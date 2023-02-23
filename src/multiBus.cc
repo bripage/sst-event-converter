@@ -121,7 +121,7 @@ void MultiBus::configureParameters(Params& params) {
     uA = uA * 2;
     busFrequency_ = uA.toString();
 
-    clockHandler_ = new Clock::Handler<multMultiBusiBus>(this, &MultiBus::clockTick);
+    clockHandler_ = new Clock::Handler<MultiBus>(this, &MultiBus::clockTick);
     defaultTimeBase_ = registerClock(busFrequency_, clockHandler_);
 }
 
