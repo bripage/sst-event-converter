@@ -24,6 +24,32 @@ MemRouterConverter::MemRouterConverter(SST::ComponentId_t id, SST::Params& param
     );
 }
 
+SST::Port* MemRouterConverter::providePort(const std::string& portName, int portIndex, SST::Port::PortFlags flags) {
+    // Check if the port is a memory port
+    if (portName == "memory") {
+        // Check if the port index is valid
+        if (portIndex != 0) {
+            // Invalid port index
+            return nullptr;
+        }
+        // Return a pointer to the memory port
+        return memoryPort;
+    }
+    // Check if the port is a network port
+    if (portName == "network") {
+        // Check if the port index is valid
+        if (portIndex != 0) {
+            // Invalid port index
+            return nullptr;
+        }
+        // Return a pointer to the network port
+        return networkPort;
+    }
+    // Invalid port name
+    return nullptr;
+}
+
+
 // Handle incoming events on the SimpleNetwork port
 void MemRouterConverter::handleNetworkEvent(SST::Interfaces::SimpleNetwork::Request* event)
 {

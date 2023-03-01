@@ -7,17 +7,20 @@
 
 #include <sst/core/component.h>
 #include <sst/core/interfaces/simpleNetwork.h>
-#include <sst/core/interfaces/standardMem.h>
+#include <sst/core/interfaces/stdMem.h>
 #include <sst/core/output.h>
 #include "sst/elements/memHierarchy/memEvent.h"
+
+using namespace SST;
+using namespace SST::MemHierarchy;
 
 class MemRouterConverter : public SST::Component {
 public:
     MemRouterConverter(SST::ComponentId_t id, SST::Params& params);
 
-    void init(unsigned int phase);
-    void setup();
-    void finish();
+    void init(unsigned int phase) override;
+    void setup() override;
+    void finish() override;
 
     bool tick(SST::Cycle_t cycle);
 
@@ -37,13 +40,19 @@ public:
     { "memory_port_name", "Name of the StandardMemory port", "memory" }
     )
 
+    // Port callback function
+    SST::Port* providePort(const std::string& portName, int portIndex, SST::Port::PortFlags flags) override;
+
 private:
-    void convertToStandardMemory(SST::Event* event, uint32_t fromNetworkAddr, MemEvent::Command cmd);
+    void convertToStandardMemory(SST::Event* event, uint32_t fromNetworkAddr, Command cmd);
     void convertToSimpleNetwork(SST::Event* event, MemEvent* memEvent);
 
     SST::Output output;
     SST::Interfaces::SimpleNetwork* simpleNetwork;
     SST::Interfaces::StandardMem* standardMemory;
+
+    int network_num_vc;
+
 };
 
 #endif /* MEMRTRCONVERTER_H */
