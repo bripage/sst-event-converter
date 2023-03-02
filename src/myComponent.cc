@@ -6,7 +6,6 @@
 
 #include "sst/elements/memHierarchy/memEvent.h"
 #include "sst/elements/memHierarchy/memEventBase.h"
-#include "sst/elements/merlin/merlin.h"
 #include "sst/elements/merlin/router.h"
 #include "myComponent.h"
 
