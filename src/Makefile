@@ -1,14 +1,14 @@
 CXXFLAGS=$(shell sst-config --ELEMENT_CXXFLAGS)
 LDFLAGS=$(shell sst-config --ELEMENT_LDFLAGS)
 
-all: libmemrouterConverter.so install
+all: libmyComponent.so install
 
-libmemrouterConverter.so: memrouterConverter.cc
+libmyComponent.so: myComponent.cc
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $<
 
 install:
-	sst-register memrouterConverter memrouterConverter_LIBDIR=$(CURDIR)
+	sst-register myComponent myComponent_LIBDIR=$(CURDIR)
 
 clean:
-	rm -f *.o libmemrouterConverter.so
+	rm -f *.o libmyComponent.so
 	rm -Rf *.o $(COMPONENT_LIB)
