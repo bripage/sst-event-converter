@@ -12,7 +12,7 @@
 using namespace SST;
 using namespace SST::MyComponent;
 
-MyComponent::MyComponent(ComponentId_t id, Params& params) : Component(id) {
+MyComponent::MyComponent(SST::ComponentId_t id, SST::Params &params) : Component(id) {
     configureLinks()
 }
 
