@@ -39,9 +39,9 @@ namespace SST {
             void init(unsigned int phase);
 
         private:
-            void MyComponent::configureLinks();
-            void MyComponent::handleNetworkEvent(SST::Event *ev);
-            void MyComponent::handleMemoryEvent(SST::Event *ev);
+            void configureLinks();
+            void handleNetworkEvent(SST::Event *ev);
+            void handleMemoryEvent(SST::Event *ev);
 
             SST::Output out;
             SST::Link* memoryLink;
