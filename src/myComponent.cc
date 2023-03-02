@@ -9,7 +9,6 @@
 #include "sst/elements/merlin/router.h"
 #include "myComponent.h"
 
-using namespace SST;
 
 MyComponent::MyComponent(SST::ComponentId_t id, SST::Params &params) : Component(id) {
     configureLinks()
@@ -17,17 +16,11 @@ MyComponent::MyComponent(SST::ComponentId_t id, SST::Params &params) : Component
 
 void MyComponent::configureLinks() {
     SST::Link* link;
-    std::string linkname = "network";
-    //if (isPortConnected(linkname)) {
-        link = configureLink(linkname, "50 ps", new Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
-        networkLink = link;
-    //}
+    link = configureLink("network", "50 ps", new Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
 
-    std::string linkname = "memory";
-    //if (isPortConnected(linkname)) {
-        link = configureLink(linkname, "50 ps", new Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
-        memoryLink = link;
-    //}
+    networkLink = link;
+    link = configureLink("memory", "50 ps", new Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
+    memoryLink = link;
 }
 
 void MyComponent::init(unsigned int phase) {
