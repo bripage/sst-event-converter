@@ -1,5 +1,6 @@
-#include <sst_config.h>
 #include <sstream>
+
+#include <sst/core/sst_config.h>
 #include <sst/core/params.h>
 #include <sst/core/interfaces/stringEvent.h>
 
