@@ -11,8 +11,8 @@
 #include "sst/elements/merlin/router.h"
 
 
-namespace SST {
-    namespace MyComponent {
+//namespace SST {
+//    namespace MyComponent {
 
         class MyComponent : public SST::Component {
         public:
@@ -46,7 +46,7 @@ namespace SST {
             SST::Link* memoryLink;
             SST::Link* networkLink;
         };
-    }
-}
+//    }
+//}
 
 #endif /* _MYCOMPONENT_H */

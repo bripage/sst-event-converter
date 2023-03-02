@@ -9,9 +9,8 @@
 #include "sst/elements/merlin/router.h"
 #include "myComponent.h"
 
-using namespace SST;
 
-MyComponent(SST::ComponentId_t id, SST::Params &params) : Component(id) {
+MyComponent::MyComponent(SST::ComponentId_t id, SST::Params &params) : Component(id) {
     configureLinks();
 }
 
