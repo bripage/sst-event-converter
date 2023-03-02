@@ -3,6 +3,7 @@
 #include <sst/core/sst_config.h>
 #include <sst/core/params.h>
 #include <sst/core/interfaces/stringEvent.h>
+#include <sst/core/componentInfo.h>
 
 #include "sst/elements/memHierarchy/memEvent.h"
 #include "sst/elements/memHierarchy/memEventBase.h"
@@ -39,12 +40,19 @@ void MyComponent::handleNetworkEvent(SST::Event* ev) {
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
     SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
+    ComponentInfo* comp_info = getComponentInfo();
 
     // Retrieve the destination component from the memory event
-    SST::ComponentId_t dest = memEvent->getDst();
-    SST::ComponentId_t src = memEvent->getSrc();
+    std::string src_name = memEvent->getSrc);
+    std::string dest_name = memEvent->getDst();
+    ComponentId_t comp_id = comp_info->findComponent(src_name);
+    SST::ComponentId_t dest = comp_id;
+    comp_id = comp_info->findComponent(dest_name);
+    SST::ComponentId_t src = comp_id;
+
     // Create a new Merlin::RtrEvent event
     SST::Merlin::RtrEvent *rtrEvent = new SST::Merlin::RtrEvent();
+
     // Set the contents of the rtrEvent
     rtrEvent->setSrc(src);
     rtrEvent->setDest(dest);
