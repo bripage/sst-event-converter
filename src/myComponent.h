@@ -1,47 +1,52 @@
 #ifndef _MYCOMPONENT_H
 #define _MYCOMPONENT_H
 
+#include <sst/core/event.h>
+#include <sst/core/sst_types.h>
 #include <sst/core/component.h>
+#include <sst/core/link.h>
+#include <sst/core/output.h>
 #include <sst/core/elementinfo.h>
-#include <sst/core/interfaces/simpleMem.h>
-#include <sst/core/interfaces/simpleNetwork.h>
+#include "sst/elements/memHierarchy/memEvent.h"
+#include "sst/elements/merlin/router.h"
 
-class MyComponent : public SST::Component {
-public:
-    MyComponent(SST::ComponentId_t id, SST::Params& params);
-    void init(unsigned int phase);
-    void setup();
-    void finish();
 
-private:
-    void handleMemoryEvent(SST::Interfaces::SimpleMem::Request *ev);
-    void handleNetworkEvent(SST::Interfaces::SimpleNetwork::Request *ev);
+namespace SST {
+    namespace MyComponent {
 
-    void convertToStandardMemory(SST::Interfaces::SimpleNetwork::Request *req);
-    void convertToSimpleNetwork(SST::Interfaces::StandardMem::Request *req);
+        class MyComponent : public SST::Component {
+        public:
+            SST_ELI_REGISTER_COMPONENT(MyComponent,
+                                       "myComponent",
+                                       "MyComponent",
+                                       SST_ELI_ELEMENT_VERSION(1,0,0),
+                                       "A component that converts between memHierarchy.MemEventBase and merlin.RtrEvent events",
+                                       COMPONENT_CATEGORY_UNCATEGORIZED
+            )
 
-    SST_ELI_REGISTER_COMPONENT(
-            MyComponent,
-    "myComponent",
-    "MyComponent",
-    SST_ELI_ELEMENT_VERSION(1,0,0),
-    "A component that converts between SST::Interfaces::StandardMemory and SST::Interfaces::SimpleNetwork",
-    COMPONENT_CATEGORY_UNCATEGORIZED
-    )
+            SST_ELI_DOCUMENT_PARAMS(
 
-    SST_ELI_DOCUMENT_PARAMS(
-    { "memory_num_vc", "Number of virtual channels for memory interface", "2" },
-    { "network_num_vc", "Number of virtual channels for network interface", "2" }
-    )
+            )
 
-    SST_ELI_DOCUMENT_PORTS(
-    {"memory", "Memory interface", {"simpleMem.Event", ""}},
-    {"network", "Network interface", {"simpleNetwork.Request", ""}}
-    )
+            SST_ELI_DOCUMENT_PORTS(
+            { "memory", "Memory interface", {"memHierarchy.MemEventBase"}},
+            { "network", "Network interface", { "merlin.RtrEvent"}}
+            )
 
-    SST::Output out;
-    SST::Link* memoryLink;
-    SST::Link* networkLink;
-};
+
+            MyComponent(SST::ComponentId_t id, SST::Params &params);
+
+            void init(unsigned int phase);
+
+        private:
+            void MyComponent::handleNetworkEvent(SST::Event *ev);
+            void MyComponent::handleMemoryEvent(SST::Event *ev);
+
+            SST::Output out;
+            SST::Link* memoryLink;
+            SST::Link* networkLink;
+        };
+    }
+}
 
 #endif /* _MYCOMPONENT_H */
