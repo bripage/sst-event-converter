@@ -10,6 +10,7 @@
 #include "myComponent.h"
 
 using namespace SST;
+using namespace SST::MyComponent;
 
 MyComponent::MyComponent(ComponentId_t id, Params& params) : Component(id) {
     configureLinks()
