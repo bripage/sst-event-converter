@@ -10,7 +10,7 @@
 #include "myComponent.h"
 
 
-MyComponent::MyComponent(SST::ComponentId_t id, SST::Params &params) : Component(id) {
+SST::MyComponent(SST::ComponentId_t id, SST::Params &params) : Component(id) {
     configureLinks();
 }
 
@@ -24,7 +24,7 @@ void MyComponent::configureLinks() {
 }
 
 void MyComponent::init(unsigned int phase) {
-    out->verbose(CALL_INFO, 1, 0, "Initialized myComponent\n");
+
 }
 
 void MyComponent::handleNetworkEvent(SST::Event* ev) {
@@ -38,7 +38,7 @@ void MyComponent::handleNetworkEvent(SST::Event* ev) {
 }
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
-    SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(event);
+    SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
 
     // Retrieve the destination component from the memory event
     SST::ComponentId_t dest = memEvent->getDst();
