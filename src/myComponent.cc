@@ -5,14 +5,14 @@ using namespace SST::Interfaces;
 using namespace SST::MemHierarchy;
 using namespace SST::Merlin;
 
-myComponent::myComponent(ComponentId_t id, Params& params) :
+MyComponent::MyComponent(ComponentId_t id, Params& params) :
         Component(id) {
 
     // get the parameters
     mem_link_name = params.find<std::string>("mem_link", "memory");
     net_link_name = params.find<std::string>("net_link", "network");
     network_num_vcs = params.find<int>("network_num_vc", 1);
-    output = new Output("myComponent[@p:@l]: ", params.find<int>("verbose", 0), 0, Output::STDOUT);
+    output = new Output("MyComponent[@p:@l]: ", params.find<int>("verbose", 0), 0, Output::STDOUT);
 
     // set up the ports
     // setup the memory port
@@ -28,7 +28,7 @@ myComponent::myComponent(ComponentId_t id, Params& params) :
 
     Params router_params = params.find_prefix_params("network.");
 
-    port_network = configureLink(net_link_name, new Event::Handler<myComponent>(this, &myComponent::handleNetworkEvent));
+    port_network = configureLink(net_link_name, new Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
     if (!port_network) {
         output->fatal(CALL_INFO, -1, "Failed to configure network link with name %s\n", net_link_name.c_str());
     }
@@ -36,20 +36,20 @@ myComponent::myComponent(ComponentId_t id, Params& params) :
     output->verbose(CALL_INFO, 1, 0, "Configured with memory link: %s, network link: %s, max addr: %" PRIu64 "\n", mem_link_name.c_str(), net_link_name.c_str(), max_addr);
 }
 
-void myComponent::init(unsigned int phase) {
+void MyComponent::init(unsigned int phase) {
     output->verbose(CALL_INFO, 1, 0, "Initialized myComponent\n");
 }
 
-bool myComponent::tick(SST::Cycle_t cycle) {
+bool MyComponent::tick(SST::Cycle_t cycle) {
     output->verbose(CALL_INFO, 1, 0, "Ticking myComponent\n");
     return false;
 }
 
-void myComponent::setup() {
+void MyComponent::setup() {
     output->verbose(CALL_INFO, 1, 0, "Setting up myComponent\n");
 }
 
-void myComponent::finish() {
+void MyComponent::finish() {
     output->verbose(CALL_INFO, 1, 0, "Finishing myComponent\n");
 }
 
@@ -63,10 +63,15 @@ bool MyComponent::handleNetworkEvent(int port, SST::Interfaces::SimpleNetwork::R
         delete ev;
 
         // Convert the MemEvent to a StandardMemory event
-        SST::Interfaces::StandardMemory::MemEvent* stdMemEv = convertToStandardMemory(memEv);
+        SST::Interfaces::StandardMemory::Request *mem_req = new SST::Interfaces::StandardMemory::Request();
+        mem_req->addr = memEv->getAddr();
+        mem_req->size = memEv->getSize();
+        mem_req->flags = 0;
+        mem_req->id = event->getID();
+        mem_req->getData().insert(req->getData().begin(), memEv->getPayload().begin(), memEv->getPayload().end());
 
         // Send the event through the memory port
-        memPort->sendEvent(stdMemEv);
+        memPort->send(mem_req);
 
         return true;
     }
@@ -77,7 +82,7 @@ bool MyComponent::handleNetworkEvent(int port, SST::Interfaces::SimpleNetwork::R
 
 void MyComponent::handleMemoryEvent(SST::Event *ev, int id)
 {
-    MemEvent *mem_event = dynamic_cast<MemEvent*>(ev);
+    MemEvent* mem_event = dynamic_cast<MemEvent*>(ev);
     if (mem_event) {
         std::cout << "Received a memory event with address: " << mem_event->getAddr() << std::endl;
 
@@ -86,21 +91,10 @@ void MyComponent::handleMemoryEvent(SST::Event *ev, int id)
         network_req->src = m_component_id;
         network_req->vn = 0;
         network_req->type = SimpleNetwork::Request::WRITE;
-        network_req->givePayload(new SimpleMemEvent(mem_event));
+        network_req->givePayload(mem_event);
 
         m_link->send(network_req);
     } else {
         std::cerr << "Received an unknown event type in handleMemoryEvent" << std::endl;
     }
-}
-
-SST::Interfaces::StandardMemory::Request* MyComponent::convertToStandardMemory(MemEvent* event) {
-    SST::Interfaces::StandardMemory::Request *req = new SST::Interfaces::StandardMemory::Request();
-    req->addr = event->getAddr();
-    req->size = event->getSize();
-    req->flags = 0;
-    req->id = event->getID();
-    req->getData().insert(req->getData().begin(), event->getPayload().begin(), event->getPayload().end());
-
-    return req;
 }
