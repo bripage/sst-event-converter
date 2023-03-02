@@ -10,7 +10,6 @@
 #include "myComponent.h"
 
 using namespace SST;
-using namespace MyComponent;
 
 MyComponent::MyComponent(ComponentId_t id, Params& params) : Component(id) {
     configureLinks()
@@ -19,16 +18,16 @@ MyComponent::MyComponent(ComponentId_t id, Params& params) : Component(id) {
 void MyComponent::configureLinks() {
     SST::Link* link;
     std::string linkname = "network";
-    if (isPortConnected(linkname)) {
+    //if (isPortConnected(linkname)) {
         link = configureLink(linkname, "50 ps", new Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
         networkLink = link;
-    }
+    //}
 
     std::string linkname = "memory";
-    if (isPortConnected(linkname)) {
+    //if (isPortConnected(linkname)) {
         link = configureLink(linkname, "50 ps", new Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
         memoryLink = link;
-    }
+    //}
 }
 
 void MyComponent::init(unsigned int phase) {
