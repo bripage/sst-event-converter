@@ -4,6 +4,7 @@
 #include <sst/core/params.h>
 #include <sst/core/interfaces/stringEvent.h>
 #include <sst/core/componentInfo.h>
+#include <sst/core/sst_types.h>
 
 #include "sst/elements/memHierarchy/memEvent.h"
 #include "sst/elements/memHierarchy/memEventBase.h"
@@ -42,11 +43,11 @@ void MyComponent::handleMemoryEvent(SST::Event *ev) {
     SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
 
 // Get the name of the sending component
-    std::string sendingComponentName = memEvent.getSrc();
+    std::string sendingComponentName = memEvent->getSrc();
 // Use the name to get the sending component's info
-    SST::ComponentInfo* sendingComponentInfo = SST::Simulation::getSimulation()->getComponentByName(sendingComponentName);
+    SST::ComponentInfo* sendingComponentInfo = SST::Simulation::getComponent(endingComponentName);
 // Get the sending component's nid_t
-    nid_t sendingComponentId = sendingComponentInfo->getId();
+    SST::nid_t sendingComponentId = sendingComponentInfo->getId();
 
     // create a SimpleNetwork::Request with the MemEventBase as payload
     SST::Interfaces::SimpleNetwork::Request *req = new SST::Interfaces::SimpleNetwork::Request();
@@ -55,7 +56,7 @@ void MyComponent::handleMemoryEvent(SST::Event *ev) {
     req->vn = 0; // set virtual network number
     req->size = event->getPayloadSize(); // set payload size
     req->givePayload(event); // set MemEventBase as payload
-    
+
     // Create a new Merlin::RtrEvent event
     SST::Merlin::RtrEvent *rtrEvent = new SST::Merlin::RtrEvent(req, src, 0);
 
