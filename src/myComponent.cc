@@ -40,12 +40,12 @@ void MyComponent::handleNetworkEvent(SST::Event* ev) {
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
     SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
-    ComponentInfo* comp_info = getComponentInfo();
+    SST::ComponentInfo* comp_info = getComponentInfo();
 
     // Retrieve the destination component from the memory event
-    std::string src_name = memEvent->getSrc);
+    std::string src_name = memEvent->getSrc();
     std::string dest_name = memEvent->getDst();
-    ComponentId_t comp_id = comp_info->findComponent(src_name);
+    SST::ComponentId_t comp_id = comp_info->findComponent(src_name);
     SST::ComponentId_t dest = comp_id;
     comp_id = comp_info->findComponent(dest_name);
     SST::ComponentId_t src = comp_id;
