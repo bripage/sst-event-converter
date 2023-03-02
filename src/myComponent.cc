@@ -4,9 +4,10 @@
 #include <sst/core/params.h>
 #include <sst/core/interfaces/stringEvent.h>
 
-#include "memEvent.h"
-#include "memEventBase.h"
-#include "merlin.h"
+#include "sst/elements/memHierarchy/memEvent.h"
+#include "sst/elements/memHierarchy/memEventBase.h"
+#include "sst/elements/merlin/merlin.h"
+#include "sst/elements/merlin/router.h"
 #include "myComponent.h"
 
 using namespace SST;

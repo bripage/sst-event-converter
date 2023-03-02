@@ -8,6 +8,7 @@
 #include <sst/core/output.h>
 #include <sst/core/elementinfo.h>
 #include "sst/elements/memHierarchy/memEvent.h"
+#include "sst/elements/memHierarchy/memEventBase.h"
 #include "sst/elements/merlin/router.h"
 
 
