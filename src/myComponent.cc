@@ -16,21 +16,21 @@ MyComponent::MyComponent(SST::ComponentId_t id, SST::Params &params) : Component
 
 void MyComponent::configureLinks() {
     SST::Link* link;
-    link = configureLink("network", "50 ps", new Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
+    link = configureLink("network", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
 
     networkLink = link;
-    link = configureLink("memory", "50 ps", new Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
+    link = configureLink("memory", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
     memoryLink = link;
 }
 
 void MyComponent::init(unsigned int phase) {
-    output->verbose(CALL_INFO, 1, 0, "Initialized myComponent\n");
+    out->verbose(CALL_INFO, 1, 0, "Initialized myComponent\n");
 }
 
 void MyComponent::handleNetworkEvent(SST::Event* ev) {
     // Extract the encapsulated MemEvent
-    SST::Merlin::RtrEvent* rtrEvent = static_cast<SST::Merlin::Event*>(ev);
-    MemEventBase* memEvent = static_cast<MemEventBase*>(rtrEvent->getPayload());
+    SST::Merlin::RtrEvent* rtrEvent = static_cast<SST::Merlin::RtrEvent*>(ev);
+    SST::MemHierarchy::MemEventBase* memEvent = static_cast<SST::MemHierarchy::MemEventBase*>(rtrEvent->getPayload());
     delete rtrEvent;
 
     // Send the event through the memory port
@@ -38,7 +38,7 @@ void MyComponent::handleNetworkEvent(SST::Event* ev) {
 }
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
-    SST::MemHierarchy::MemEventBase *memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(event);
+    SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(event);
 
     // Retrieve the destination component from the memory event
     SST::ComponentId_t dest = memEvent->getDst();
