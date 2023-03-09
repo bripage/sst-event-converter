@@ -5,6 +5,7 @@
 #include <sst/core/interfaces/stringEvent.h>
 #include <sst/core/componentInfo.h>
 #include <sst/core/sst_types.h>
+#include "sst/core/interfaces/stdMem.h"
 
 #include "sst/elements/memHierarchy/memEvent.h"
 #include "sst/elements/memHierarchy/memEventBase.h"
