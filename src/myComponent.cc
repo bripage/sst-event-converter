@@ -71,4 +71,22 @@ void MyComponent::handleMemoryEvent(SST::Event *ev) {
     // Send the Merlin::RtrEvent to the desired destination component
     networkLink->send(rtrEvent);
      */
+
+    SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
+    if (memEvent) {
+        // Event is a memEventBase event
+
+    } else {
+        // Event is not a memEventBase event
+        SST::Inteferfaces::StandardMem::Request* memRequest = dynamic_cast<SST::Inteferfaces::StandardMem::Request*>(ev);
+        if (memRequest){
+            // Event is actually a StandardMemory::Request
+
+        } else {
+            // Event is not a memEventBase nor a StandardMemory::Request
+
+        }
+        delete memRequest;
+    }
+    delete memEvent;
 }
