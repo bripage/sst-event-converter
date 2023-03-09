@@ -19,9 +19,9 @@ MyComponent::MyComponent(SST::ComponentId_t id, SST::Params &params) : Component
 void MyComponent::configureLinks() {
     SST::Link* link;
     link = configureLink("network", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
-
     networkLink = link;
-    link = configureLink("memory", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
+
+    link = configureLink("memory", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleMemoryEvent));
     memoryLink = link;
 }
 
@@ -45,7 +45,7 @@ void MyComponent::handleMemoryEvent(SST::Event *ev) {
 // Get the name of the sending component
     std::string sendingComponentName = memEvent->getSrc();
 // Use the name to get the sending component's info
-    SST::ComponentInfo* sendingComponentInfo = SST::Simulation::getComponent(endingComponentName);
+    SST::ComponentInfo* sendingComponentInfo = SST::Simulation::getComponent(sendingComponentName);
 // Get the sending component's nid_t
     SST::nid_t sendingComponentId = sendingComponentInfo->getId();
 
@@ -67,5 +67,4 @@ void MyComponent::handleMemoryEvent(SST::Event *ev) {
     delete memEvent;
     // Send the Merlin::RtrEvent to the desired destination component
     networkLink->send(rtrEvent);
-
 }
