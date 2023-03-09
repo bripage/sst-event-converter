@@ -6,7 +6,7 @@
 #include <sst/core/componentInfo.h>
 #include <sst/core/sst_types.h>
 
-#include <sst/elements/memHierarchy/memEvent.h>
+#include "sst/elements/memHierarchy/memEvent.h"
 #include "sst/elements/memHierarchy/memEventBase.h"
 #include "sst/elements/merlin/router.h"
 #include "myComponent.h"
@@ -78,7 +78,7 @@ void MyComponent::handleMemoryEvent(SST::Event *ev) {
 
     } else {
         // Event is not a memEventBase event
-        SST::Interfaces::SimpleMem::Request* memRequest = dynamic_cast<SST::Interfaces::SimpleMem::Request*>(ev);
+        SST::Interfaces::StandardMem::Request* memRequest = dynamic_cast<SST::Interfaces::StandardMem::Request*>(ev);
         if (memRequest){
             // Event is actually a StandardMemory::Request
 
