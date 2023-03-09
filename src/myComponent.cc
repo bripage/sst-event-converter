@@ -32,7 +32,7 @@ void MyComponent::init(unsigned int phase) {
 void MyComponent::handleNetworkEvent(SST::Event* ev) {
     // Extract the encapsulated MemEvent
     SST::Merlin::RtrEvent* rtrEvent = static_cast<SST::Merlin::RtrEvent*>(ev);
-    SST::MemHierarchy::MemEventBase* memEvent = static_cast<SST::MemHierarchy::MemEventBase*>(rtrEvent->getPayload());
+    SST::MemHierarchy::MemEventBase* memEvent = static_cast<SST::MemHierarchy::MemEventBase*>(rtrEvent->takePayload());
     delete rtrEvent;
 
     // Send the event through the memory port
