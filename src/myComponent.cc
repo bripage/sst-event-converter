@@ -32,14 +32,17 @@ void MyComponent::init(unsigned int phase) {
 void MyComponent::handleNetworkEvent(SST::Event* ev) {
     // Extract the encapsulated MemEvent
     SST::Merlin::RtrEvent* rtrEvent = static_cast<SST::Merlin::RtrEvent*>(ev);
-    SST::MemHierarchy::MemEventBase* memEvent = static_cast<SST::MemHierarchy::MemEventBase*>(rtrEvent->takePayload());
+    SST::Interfaces::SimpleNetwork::Request* rtrReq = static_cast<SST::Interfaces::SimpleNetwork::Request*>(rtrEvent->takeRequest());
+    SST::MemHierarchy::MemEventBase* memEvent = static_cast<SST::MemHierarchy::MemEventBase*>(rtrReq->takePayload());
     delete rtrEvent;
+    delete rtrReq;
 
     // Send the event through the memory port
     memoryLink->send(memEvent);
 }
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
+    /*
     SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
 
 // Get the name of the sending component
@@ -67,4 +70,5 @@ void MyComponent::handleMemoryEvent(SST::Event *ev) {
     delete memEvent;
     // Send the Merlin::RtrEvent to the desired destination component
     networkLink->send(rtrEvent);
+     */
 }
