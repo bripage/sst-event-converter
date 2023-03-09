@@ -78,7 +78,7 @@ void MyComponent::handleMemoryEvent(SST::Event *ev) {
 
     } else {
         // Event is not a memEventBase event
-        SST::Inteferfaces::StandardMem::Request* memRequest = dynamic_cast<SST::Inteferfaces::StandardMem::Request*>(ev);
+        SST::Interfaces::StandardMem::Request* memRequest = dynamic_cast<SST::Interfaces::StandardMem::Request*>(ev);
         if (memRequest){
             // Event is actually a StandardMemory::Request
 
