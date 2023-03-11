@@ -44,35 +44,6 @@ void MyComponent::handleNetworkEvent(SST::Event* ev) {
 }
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
-    /*
-    SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
-
-// Get the name of the sending component
-    std::string sendingComponentName = memEvent->getSrc();
-// Use the name to get the sending component's info
-    SST::ComponentInfo* sendingComponentInfo = SST::Simulation::getComponent(sendingComponentName);
-// Get the sending component's nid_t
-    SST::nid_t sendingComponentId = sendingComponentInfo->getId();
-
-    // create a SimpleNetwork::Request with the MemEventBase as payload
-    SST::Interfaces::SimpleNetwork::Request *req = new SST::Interfaces::SimpleNetwork::Request();
-    req->dest = sendingComponentId; // set destination address
-    req->src = sendingComponentId; // set source address
-    req->vn = 0; // set virtual network number
-    req->size = event->getPayloadSize(); // set payload size
-    req->givePayload(event); // set MemEventBase as payload
-
-    // Create a new Merlin::RtrEvent event
-    SST::Merlin::RtrEvent *rtrEvent = new SST::Merlin::RtrEvent(req, src, 0);
-
-    // Set the contents of the rtrEvent
-    rtrEvent->setSrc(src);
-    rtrEvent->setDest(dest);
-    rtrEvent->setPayload(memEvent);
-    delete memEvent;
-    // Send the Merlin::RtrEvent to the desired destination component
-    networkLink->send(rtrEvent);
-     */
     SST::Interfaces::SimpleNetwork::Request *req = new SST::Interfaces::SimpleNetwork::Request();
 
     SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
