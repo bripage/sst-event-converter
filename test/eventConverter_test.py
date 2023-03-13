@@ -53,10 +53,16 @@ router.addParams({
     "xbar_bw": "51.2GB/s",
     "input_buf_size": "2KB",
     "input_latency": "25ps",
-    "num_ports": 5,
+    "num_ports": 4,
     "flit_size": "512B",
     "output_buf_size": "2KB",
     "link_bw": "51.2GB/s"
+})
+rtrTop = router.setSubComponent("topology", "merlin.torus")
+rtrTop.addParams({
+    "shape": 1,
+    "local_ports": 2,
+    "width": 1
 })
 
 mc.addParams({
@@ -68,6 +74,9 @@ mc.addParams({
 })
 
 # Connect the ports
+link0 = sst.Link("link0")
+link0.connect((router, "port2", "100ps"), (router, "port3", "50ps"))
+
 link1 = sst.Link("link1")
 link1.connect((cpu, "cache_link", "100ps"), (cache, "high_network_0", "50ps"))
 

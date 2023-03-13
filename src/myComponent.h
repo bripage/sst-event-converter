@@ -17,8 +17,8 @@
         class MyComponent : public SST::Component {
         public:
             SST_ELI_REGISTER_COMPONENT(MyComponent,
-                                       "myComponent",
-                                       "MyComponent",
+                                       "myComponent", // library name
+                                       "MyComponent", // component name -> myComponent.MyComponent
                                        SST_ELI_ELEMENT_VERSION(1,0,0),
                                        "A component that converts between memHierarchy.MemEventBase and merlin.RtrEvent events",
                                        COMPONENT_CATEGORY_UNCATEGORIZED
