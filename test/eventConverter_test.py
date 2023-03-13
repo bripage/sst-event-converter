@@ -16,27 +16,72 @@ sst.setStatisticOutputOptions({
 })
 
 # Create the components
+cpu = sst.Component("cpu", "miranda.BaseCPU")
 cache = sst.Component("cache", "memHierarchy.Cache")
 router = sst.Component("router", "merlin.hr_router")
-my_comp = sst.Component("my_comp", "MyComponent")
-
+myCmp1 = sst.Component("myComp1", "MyComponent")
+myCmp2 = sst.Component("myComp2", "MyComponent")
+md = sst.Component("memDir", "memHierarchy.DirectoryController")
+mc = sst.Component("memCon", "memHierarchy.MemController")
 # Set the parameters
+
+cpu.addParams({
+    "verbose" : 1,
+    "clock" : "2GHz",
+    "generator" : "miranda.STREAMBenchGenerator"
+})
+gen = cpu.setSubComponent("gen", "miranda.STREAMBenchGenerator")
+gen.addParams({
+    "generatorParams.verbose" : 1
+})
+
 cache.addParams({
+    "L1": 1,
+    "cache_type": "inclusive",
     "cache_frequency": "2GHz",
     "cache_size": "64KiB",
+    "cache_line_size": 64,
+    "coherence_protocol": "MESI",
+    "banks": 8,
+    "associativity": 8,
     "access_latency_cycles": "4",
+    "node": 1
 })
 router.addParams({
-    "num_ports": "4",
-    "flit_size": "8B",
-    "link_bw": "1GB/s",
+    "id": 0,
+    "output_latency": "25ps",
+    "xbar_bw": "51.2GB/s",
+    "input_buf_size": "2KB",
+    "input_latency": "25ps",
+    "num_ports": 5,
+    "flit_size": "512B",
+    "output_buf_size": "2KB",
+    "link_bw": "51.2GB/s"
 })
-my_comp.addParams({
-    "network_num_vc": "2",
+
+mc.addParams({
+    "clock": "200MHz",
+    "network_bw": "100MB/s",
+    "backing": "malloc",
+    "addr_range_start": 0,
+    "backend.mem_size": "64GiB"
 })
 
 # Connect the ports
 link1 = sst.Link("link1")
-link1.connect((cache, "cpu", "100ps"), (my_comp, "memory", "50ps"))
+link1.connect((cache, "cpu", "100ps"), (cache, "high_network_0", "50ps"))
+
 link2 = sst.Link("link2")
-link2.connect((my_comp, "network", "50ps"), (router, "port", "50ps"))
+link2.connect((cache, "directory", "100ps"), (myCmp1, "memory", "50ps"))
+
+link3 = sst.Link("link3")
+link3.connect((myCmp1, "network", "100ps"), (router, "port0", "50ps"))
+
+link4 = sst.Link("link4")
+link4.connect((myCmp2, "network", "100ps"), (router, "port1", "50ps"))
+
+link5 = sst.Link("link5")
+link5.connect((myCmp2, "memory", "100ps"), (md, "network", "50ps"))
+
+link6 = sst.Link("link6")
+link6.connect((md, "memory", "100ps"), (mc, "direct_link", "50ps"))
