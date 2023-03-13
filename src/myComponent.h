@@ -29,8 +29,8 @@
             )
 
             SST_ELI_DOCUMENT_PORTS(
-            { "memory", "Memory interface", {"memHierarchy.MemEventBase"}},
-            { "network", "Network interface", { "merlin.RtrEvent"}}
+            { "memory", "Memory interface", {}},
+            { "network", "Network interface", {}}
             )
 
 
