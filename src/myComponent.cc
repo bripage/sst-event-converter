@@ -23,15 +23,6 @@ void MyComponent::configureLinks() {
     link = configureLink("rtr_0", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
     rtr_0_Link = link;
 
-    link = configureLink("rtr_1", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
-    rtr_2_Link = link;
-
-    link = configureLink("rtr_2", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
-    rtr_1_Link = link;
-
-    link = configureLink("rtr_3", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
-    rtr_3_Link = link;
-
     link = configureLink("memory", "50 ps", new SST::Event::Handler<MyComponent>(this, &MyComponent::handleMemoryEvent));
     memoryLink = link;
 }

@@ -30,10 +30,7 @@
 
             SST_ELI_DOCUMENT_PORTS(
             { "memory", "Memory interface", {""}},
-            {"rtr_0", "Router mesh col 0", {""} },
-            {"rtr_1", "Router mesh col 1", {""} },
-            {"rtr_2", "Router mesh col 2", {""} },
-            {"rtr_3", "Router mesh col 3", {""} },
+            {"rtr_0", "Router mesh col 0", {""} }
             )
 
 
@@ -49,9 +46,6 @@
             SST::Output out;
             SST::Link* memoryLink;
             SST::Link* rtr_0_Link;
-            SST::Link* rtr_1_Link;
-            SST::Link* rtr_2_Link;
-            SST::Link* rtr_3_Link;
         };
 //    }
 //}
