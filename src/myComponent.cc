@@ -44,51 +44,40 @@ void MyComponent::handleNetworkEvent(SST::Event* ev) {
 }
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
-    SST::Interfaces::SimpleNetwork::Request *req = new SST::Interfaces::SimpleNetwork::Request();
-
     SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
+
+
     if (memEvent) {
+        out.output("handleMemoryEvent() received a MemEventBase event");
         // Event is a memEventBase event
-        req->dest = sendingComponentId; // set destination address
-        req->src = sendingComponentId; // set source address
-        req->vn = 0; // set virtual network number
-        req->size = event->getPayloadSize(); // set payload size
-        req->givePayload(event); // set MemEventBase as payload
-
-        // Create a new Merlin::RtrEvent event
-        SST::Merlin::RtrEvent *rtrEvent = new SST::Merlin::RtrEvent(req, src, 0);
-
-        // Set the contents of the rtrEvent
-        rtrEvent->setSrc(src);
-        rtrEvent->setDest(dest);
-        rtrEvent->setPayload(memEvent);
-        // Send the Merlin::RtrEvent to the desired destination component
-        networkLink->send(rtrEvent);
+//        STD::string srcString = memEvent->getSrc();
+//        STD::string destStr = memEvent->getDst();
+//        srcCmpId
+//        destCmpId
+//
+//        SST::Interfaces::SimpleNetwork::Request *req = new SST::Interfaces::SimpleNetwork::Request();
+//        req->dest = sendingComponentId; // set destination address
+//        req->src = sendingComponentId; // set source address
+//        req->vn = 0; // set virtual network number
+//        req->size = event->getPayloadSize(); // set payload size
+//        req->givePayload(event); // set MemEventBase as payload
+//
+//        // Create a new Merlin::RtrEvent event
+//        SST::Merlin::RtrEvent *rtrEvent = new SST::Merlin::RtrEvent(req, src, 0);
+//
+//        // Set the contents of the rtrEvent
+//        rtrEvent->setSrc(src);
+//        rtrEvent->setDest(dest);
+//        rtrEvent->setPayload(memEvent);
+//        // Send the Merlin::RtrEvent to the desired destination component
+//        networkLink->send(rtrEvent);
         delete memEvent;
     } else {
         // Event is not a memEventBase event
-        SST::Interfaces::SimpleMem::Request* memRequest = dynamic_cast<SST::Interfaces::SimpleMem::Request*>(ev);
-        if (memRequest){
-            // Event is actually a StandardMemory::Request
-            req->dest = sendingComponentId; // set destination address
-            req->src = sendingComponentId; // set source address
-            req->vn = 0; // set virtual network number
-            req->size = event->getPayloadSize(); // set payload size
-            req->givePayload(event); // set MemEventBase as payload
-
-            // Create a new Merlin::RtrEvent event
-            SST::Merlin::RtrEvent *rtrEvent = new SST::Merlin::RtrEvent(req, src, 0);
-
-            // Set the contents of the rtrEvent
-            rtrEvent->setSrc(src);
-            rtrEvent->setDest(dest);
-            rtrEvent->setPayload(memEvent);
-            // Send the Merlin::RtrEvent to the desired destination component
-            networkLink->send(rtrEvent);
-            delete memRequest;
-        } else {
-            // Event is not a memEventBase nor a StandardMemory::Request
-
+        SST::Interfaces::StandardMemory::Request* memReq = dynamic_cast<SST::Interfaces::StandardMemory::Request**>(ev);
+        if (memReq) {
+            out.output("handleMemoryEvent() received a StdMem request");
         }
+        delete memReq;
     }
 }

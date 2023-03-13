@@ -43,6 +43,7 @@
             void handleNetworkEvent(SST::Event *ev);
             void handleMemoryEvent(SST::Event *ev);
 
+            SST::Output out;
             SST::Link* memoryLink;
             SST::Link* networkLink;
         };
