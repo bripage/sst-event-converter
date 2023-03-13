@@ -69,7 +69,7 @@ mc.addParams({
 
 # Connect the ports
 link1 = sst.Link("link1")
-link1.connect((cache, "cache_link", "100ps"), (cache, "high_network_0", "50ps"))
+link1.connect((cpu, "cache_link", "100ps"), (cache, "high_network_0", "50ps"))
 
 link2 = sst.Link("link2")
 link2.connect((cache, "directory", "100ps"), (myCmp1, "memory", "50ps"))
