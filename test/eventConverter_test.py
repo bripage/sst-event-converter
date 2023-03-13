@@ -181,7 +181,7 @@ R2toDC = sst.Link("C2toDC")
 R2toDC.connect((rtr2, "port4", "300ps"), (myComp, "rtr_0", "300ps"))
 
 MyComptoDC = sst.Link("MyComptoDC")
-MyComptoDC.connect((myComp, "port4", "300ps"), (dc1, "memory", "300ps"))
+MyComptoDC.connect((myComp, "port4", "300ps"), (dc1, "network", "300ps"))
 
 DCtoMC = sst.Link("DCtoMC")
 DCtoMC.connect((dc1, "memory", "300ps"), (mc1, "direct_link", "300ps"))
