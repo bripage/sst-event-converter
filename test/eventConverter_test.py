@@ -19,8 +19,8 @@ sst.setStatisticOutputOptions({
 cpu = sst.Component("cpu", "miranda.BaseCPU")
 cache = sst.Component("cache", "memHierarchy.Cache")
 # router = sst.Component("router", "merlin.hr_router")
-myCmp1 = sst.Component("myComp1", "myComponent.MyComponent")
-myCmp2 = sst.Component("myComp2", "myComponent.MyComponent")
+# myCmp1 = sst.Component("myComp1", "myComponent.MyComponent")
+# myCmp2 = sst.Component("myComp2", "myComponent.MyComponent")
 md = sst.Component("memDir", "memHierarchy.DirectoryController")
 mc = sst.Component("memCon", "memHierarchy.MemController")
 # Set the parameters
