@@ -34,53 +34,8 @@ void MyComponent::init(unsigned int phase) {
 void MyComponent::handleNetworkEvent(SST::Event* ev) {
     // Extract the encapsulated MemEvent
     out.output("handleNetworkEvent() received a RtrEvent event");
-    /*
-    SST::Merlin::RtrEvent* rtrEvent = static_cast<SST::Merlin::RtrEvent*>(ev);
-    SST::Interfaces::SimpleNetwork::Request* rtrReq = static_cast<SST::Interfaces::SimpleNetwork::Request*>(rtrEvent->takeRequest());
-    SST::MemHierarchy::MemEventBase* memEvent = static_cast<SST::MemHierarchy::MemEventBase*>(rtrReq->takePayload());
-    delete rtrEvent;
-    delete rtrReq;
-
-    // Send the event through the memory port
-    memoryLink->send(memEvent);
-    */
 }
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
-    //SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
-
-
-    //if (memEvent) {
-        out.output("handleMemoryEvent() received a MemEventBase event");
-        // Event is a memEventBase event
-//        STD::string srcString = memEvent->getSrc();
-//        STD::string destStr = memEvent->getDst();
-//        srcCmpId
-//        destCmpId
-//
-//        SST::Interfaces::SimpleNetwork::Request *req = new SST::Interfaces::SimpleNetwork::Request();
-//        req->dest = sendingComponentId; // set destination address
-//        req->src = sendingComponentId; // set source address
-//        req->vn = 0; // set virtual network number
-//        req->size = event->getPayloadSize(); // set payload size
-//        req->givePayload(event); // set MemEventBase as payload
-//
-//        // Create a new Merlin::RtrEvent event
-//        SST::Merlin::RtrEvent *rtrEvent = new SST::Merlin::RtrEvent(req, src, 0);
-//
-//        // Set the contents of the rtrEvent
-//        rtrEvent->setSrc(src);
-//        rtrEvent->setDest(dest);
-//        rtrEvent->setPayload(memEvent);
-//        // Send the Merlin::RtrEvent to the desired destination component
-//        networkLink->send(rtrEvent);
-//        delete memEvent;
-//    } else {
-//        // Event is not a memEventBase event
-//        SST::Interfaces::StandardMem::Request* memReq = dynamic_cast<SST::Interfaces::StandardMem::Request*>(ev);
-//        if (memReq) {
-//            out.output("handleMemoryEvent() received a StdMem request");
-//        }
-//        delete memReq;
-//    }
+    out.output("handleMemoryEvent() received a MemEventBase event");
 }

@@ -82,19 +82,19 @@ link1 = sst.Link("link1")
 link1.connect((cpu, "cache_link", "100ps"), (cache, "high_network_0", "50ps"))
 
 link2 = sst.Link("link2")
-link2.connect((cache, "directory", "100ps"), (myCmp1, "memory", "50ps"))
+link2.connect((cache, "directory", "100ps"), (md, "network", "50ps"))
 
 # link3 = sst.Link("link3")
 # link3.connect((myCmp1, "network", "100ps"), (router, "port0", "50ps"))
 #
 # link4 = sst.Link("link4")
 # link4.connect((myCmp2, "network", "100ps"), (router, "port1", "50ps"))
-
-link3 = sst.Link("link3")
-link3.connect((myCmp1, "network", "100ps"), (myCmp2, "network", "50ps"))
-
-link5 = sst.Link("link5")
-link5.connect((myCmp2, "memory", "100ps"), (md, "network", "50ps"))
+#
+# link3 = sst.Link("link3")
+# link3.connect((myCmp1, "network", "100ps"), (myCmp2, "network", "50ps"))
+#
+# link5 = sst.Link("link5")
+# link5.connect((myCmp2, "memory", "100ps"), (md, "network", "50ps"))
 
 link6 = sst.Link("link6")
 link6.connect((md, "memory", "100ps"), (mc, "direct_link", "50ps"))
