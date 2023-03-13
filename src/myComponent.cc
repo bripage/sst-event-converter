@@ -47,10 +47,10 @@ void MyComponent::handleNetworkEvent(SST::Event* ev) {
 }
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
-    SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
+    //SST::MemHierarchy::MemEventBase* memEvent = dynamic_cast<SST::MemHierarchy::MemEventBase*>(ev);
 
 
-    if (memEvent) {
+    //if (memEvent) {
         out.output("handleMemoryEvent() received a MemEventBase event");
         // Event is a memEventBase event
 //        STD::string srcString = memEvent->getSrc();
@@ -74,13 +74,13 @@ void MyComponent::handleMemoryEvent(SST::Event *ev) {
 //        rtrEvent->setPayload(memEvent);
 //        // Send the Merlin::RtrEvent to the desired destination component
 //        networkLink->send(rtrEvent);
-        delete memEvent;
-    } else {
-        // Event is not a memEventBase event
-        SST::Interfaces::StandardMem::Request* memReq = dynamic_cast<SST::Interfaces::StandardMem::Request*>(ev);
-        if (memReq) {
-            out.output("handleMemoryEvent() received a StdMem request");
-        }
-        delete memReq;
-    }
+//        delete memEvent;
+//    } else {
+//        // Event is not a memEventBase event
+//        SST::Interfaces::StandardMem::Request* memReq = dynamic_cast<SST::Interfaces::StandardMem::Request*>(ev);
+//        if (memReq) {
+//            out.output("handleMemoryEvent() received a StdMem request");
+//        }
+//        delete memReq;
+//    }
 }
