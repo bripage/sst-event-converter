@@ -7,49 +7,32 @@ sst.setProgramOption("timebase", "1 ps")
 #-- set the "stop-at" option
 sst.setProgramOption("stop-at", "10s")
 
-#-- set statistics level and output
-sst.setStatisticLoadLevel(1)
-sst.setStatisticOutput("sst.statOutputConsole")
-sst.setStatisticOutputOptions({
-    "filepath": "stats.txt",
-    "separator": "\t",
-})
 
-# Create the components
-cpu = sst.Component("cpu", "miranda.BaseCPU")
-cache = sst.Component("cache", "memHierarchy.Cache")
-# router = sst.Component("router", "merlin.hr_router")
-# myCmp1 = sst.Component("myComp1", "myComponent.MyComponent")
-# myCmp2 = sst.Component("myComp2", "myComponent.MyComponent")
-md = sst.Component("memDir", "memHierarchy.DirectoryController")
-mc = sst.Component("memCon", "memHierarchy.MemController")
-# Set the parameters
-
-cpu.addParams({
+#
+#   Begin Core 1
+#
+core1 = sst.Component("core1", "miranda.BaseCPU")
+core1.addParams({
     "verbose" : 1,
     "clock" : "2GHz",
     "generator" : "miranda.STREAMBenchGenerator"
 })
-gen = cpu.setSubComponent("gen", "miranda.STREAMBenchGenerator")
+gen = core1.setSubComponent("gen1", "miranda.STREAMBenchGenerator")
 gen.addParams({
     "generatorParams.verbose" : 1
 })
 
-cache.addParams({
-    "L1": 1,
-    "cache_type": "inclusive",
+L1_1 = sst.Component("L1_1", "memHierarchy.Cache")
+L1_1.addParams({
     "cache_frequency": "2GHz",
-    "cache_size": "64KiB",
-    "cache_line_size": 64,
-    "coherence_protocol": "MESI",
-    "banks": 8,
+    "cache_size": "32KB",
     "associativity": 8,
-    "access_latency_cycles": "4",
-    "node": 1
+    "access_latency_cycles": 4,
+    "L1": 1
 })
 
-cache2 = sst.Component("cache2", "memHierarchy.Cache")
-cache2.addParams({
+L2_1 = sst.Component("L2_1", "memHierarchy.Cache")
+L2_1.addParams({
     "prefetcher": "cassini.StridePrefetcher",
     "prefetcher.reach": 16,
     "prefetcher.detect_range" : 1,
@@ -62,56 +45,144 @@ cache2.addParams({
     "memNIC.network_bw": "51.2GB/s"
 })
 
-# router.addParams({
-#     "id": 0,
-#     "output_latency": "25ps",
-#     "xbar_bw": "51.2GB/s",
-#     "input_buf_size": "2KB",
-#     "input_latency": "25ps",
-#     "num_ports": 4,
-#     "flit_size": "512B",
-#     "output_buf_size": "2KB",
-#     "link_bw": "51.2GB/s"
-# })
-# rtrTop = router.setSubComponent("topology", "merlin.torus")
-# rtrTop.addParams({
-#     "shape": 1,
-#     "local_ports": 2,
-#     "width": 1
-# })
 
-mc.addParams({
+C1toL1 = sst.Link("C1toL1")
+C1toL1.connect( (core1, "cache_link", "300ps"), (L1_1, "high_network_0", "300ps") )
+C1_L1toL2 = sst.Link("C1_L1toL2")
+C1_L1toL2.connect( (L1_1, "low_network_0", "300ps"), (L2_1, "high_network_0", "300ps") )
+#
+#   End Core 1
+#
+
+
+#
+#   Begin Core 2
+#
+core2 = sst.Component("core2", "miranda.BaseCPU")
+core2.addParams({
+    "verbose" : 1,
+    "clock" : "2GHz",
+    "generator" : "miranda.STREAMBenchGenerator"
+})
+gen = core2.setSubComponent("gen2", "miranda.STREAMBenchGenerator")
+gen.addParams({
+    "generatorParams.verbose" : 1
+})
+
+L1_2 = sst.Component("L1_2", "memHierarchy.Cache")
+L1_2.addParams({
+    "cache_frequency": "2GHz",
+    "cache_size": "32KB",
+    "associativity": 8,
+    "access_latency_cycles": 4,
+    "L1": 1
+})
+
+L2_2 = sst.Component("L2_2", "memHierarchy.Cache")
+L2_2.addParams({
+    "prefetcher": "cassini.StridePrefetcher",
+    "prefetcher.reach": 16,
+    "prefetcher.detect_range" : 1,
+    "cache_frequency": "2GHz",
+    "cache_size": "256KB",
+    "associativity": 8,
+    "access_latency_cycles": 6,
+    "mshr_num_entries" : 16,
+    "mshr_latency_cycles": 2,
+    "memNIC.network_bw": "51.2GB/s"
+})
+
+
+C2toL1 = sst.Link("C2toL1")
+C2toL1.connect( (core2, "cache_link", "300ps"), (L1_2, "high_network_0", "300ps") )
+C2_L1toL2 = sst.Link("C2_L1toL2")
+C2_L1toL2.connect( (L1_2, "low_network_0", "300ps"), (L2_2, "high_network_0", "300ps") )
+# End Core 2
+
+#
+# Begin Router 1
+#
+rtr1 = sst.Component("rtr1", "merlin.hr_router")
+rtr1.addParams({
+    "id": 0,
+    "output_latency": "25ps",
+    "xbar_bw": "51.2GB/s",
+    "input_buf_size": "2KB",
+    "input_latency": "25ps",
+    "num_ports": 5,
+    "flit_size": "512B",
+    "output_buf_size": "2KB",
+    "link_bw": "51.2GB/s"
+})
+top1 = rtr1.setSubComponent("topology", "merlin.torus")
+top1.addParams({
+    "shape": 2,
+    "local_ports": 3,
+    "width": 1
+})
+# End router 1
+
+#
+# Begin Router 2
+#
+rtr2 = sst.Component("rtr2", "merlin.hr_router")
+rtr2.addParams({
+    "id": 1,
+    "output_latency": "25ps",
+    "xbar_bw": "51.2GB/s",
+    "input_buf_size": "2KB",
+    "input_latency": "25ps",
+    "num_ports": 5,
+    "flit_size": "512B",
+    "output_buf_size": "2KB",
+    "link_bw": "51.2GB/s"
+})
+top2 = rtr2.setSubComponent("topology", "merlin.torus")
+top2.addParams({
+    "shape": 2,
+    "local_ports": 3,
+    "width": 1
+})
+# End router 2
+
+C1_CtoRtr = sst.Link("C1_CtoRtr")
+C1_CtoRtr.connect((L2_1, "directory", "300ps"), (rtr1, "port2", "300ps"))
+
+C2_CtoRtr = sst.Link("C2_CtoRtr")
+C2_CtoRtr.connect((L2_2, "directory", "300ps"), (rtr1, "port3", "300ps"))
+
+C1toC2_h = sst.Link("C1toC2_h")
+C1toC2_h.connect((rtr1, "port0", "300ps"), (rtr2, "port1", "300ps"))
+
+C2toC1_h = sst.Link("C2toC1_h")
+C2toC1_h.connect((rtr2, "port0", "300ps"), (rtr1, "port1", "300ps"))
+
+#
+#   Memory Director and Controller
+#
+dc1 = sst.Component("dc1", "memHierarchy.DirectoryController")
+dc1.addParams({
+
+})
+
+mc1 = sst.Component("mc1", "memHierarchy.MemController")
+mc1.addParams({
     "clock": "200MHz",
     "network_bw": "100MB/s",
     "backing": "malloc",
     "addr_range_start": 0,
     "backend.mem_size": "64GiB"
 })
+# End MC and DC components
 
-# Connect the ports
-# link0 = sst.Link("link0")
-# link0.connect((router, "port2", "100ps"), (router, "port3", "50ps"))
+myComp = sst.Component("myComp","myComponent.MyComponent")
 
-link1 = sst.Link("link1")
-link1.connect((cpu, "cache_link", "100ps"), (cache, "high_network_0", "50ps"))
+R2toDC = sst.Link("C2toDC")
+R2toDC.connect((rtr2, "port4", "300ps"), (myComp, "rtr_0", "300ps"))
 
-link = sst.Link("link")
-link.connect((cache, "low_network_0", "100ps"), (cache2, "high_network_0", "50ps"))
+MyComptoDC = sst.Link("MyComptoDC")
+MyComptoDC.connect((myComp, "port4", "300ps"), (dc1, "memory", "300ps"))
 
-link2 = sst.Link("link2")
-link2.connect((cache2, "directory", "100ps"), (mc, "direct_link", "50ps"))
+DCtoMC = sst.Link("DCtoMC")
+DCtoMC.connect((dc1, "memory", "300ps"), (mc1, "direct_link", "300ps"))
 
-# link3 = sst.Link("link3")
-# link3.connect((myCmp1, "network", "100ps"), (router, "port0", "50ps"))
-#
-# link4 = sst.Link("link4")
-# link4.connect((myCmp2, "network", "100ps"), (router, "port1", "50ps"))
-#
-# link3 = sst.Link("link3")
-# link3.connect((myCmp1, "network", "100ps"), (myCmp2, "network", "50ps"))
-#
-# link5 = sst.Link("link5")
-# link5.connect((myCmp2, "memory", "100ps"), (md, "network", "50ps"))
-
-# link6 = sst.Link("link6")
-# link6.connect((md, "memory", "100ps"), (mc, "direct_link", "50ps"))
