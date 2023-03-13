@@ -42,11 +42,11 @@ void MyComponent::init(unsigned int phase) {
 
 void MyComponent::handleNetworkEvent(SST::Event* ev) {
     // Extract the encapsulated MemEvent
-    out.fatal(CALL_INFO, -1, "%s, received something on port rtr_0\n", getName().c_str());
+    //out.fatal(CALL_INFO, -1, "%s, received something on port rtr_0\n", getName().c_str());
     //memoryLink->send(ev);
 }
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
-    out.fatal(CALL_INFO, -1, "%s, received somethign on port memory\n", getName().c_str());
+    //out.fatal(CALL_INFO, -1, "%s, received somethign on port memory\n", getName().c_str());
     //rtr_0_Link->send(ev);
 }
