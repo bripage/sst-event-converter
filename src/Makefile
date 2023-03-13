@@ -1,7 +1,7 @@
 CXXFLAGS=$(shell sst-config --ELEMENT_CXXFLAGS)
 LDFLAGS=$(shell sst-config --ELEMENT_LDFLAGS)
-ICORE=/mnt/data/sst/core/include
-IELEMENTS=/mnt/data/sst/elements/include
+ICORE=-I/mnt/data/sst/core/include
+IELEMENTS=-I/mnt/data/sst/elements/include
 
 all: libmyComponent.so install
 
