@@ -48,6 +48,20 @@ cache.addParams({
     "node": 1
 })
 
+cache2 = sst.Component("cache2", "memHierarchy.Cache")
+cache2.addParams({
+    "prefetcher": "cassini.StridePrefetcher",
+    "prefetcher.reach": 16,
+    "prefetcher.detect_range" : 1,
+    "cache_frequency": "2GHz",
+    "cache_size": "256KB",
+    "associativity": 8,
+    "access_latency_cycles": 6,
+    "mshr_num_entries" : 16,
+    "mshr_latency_cycles": 2,
+    "memNIC.network_bw": "51.2GB/s"
+})
+
 # router.addParams({
 #     "id": 0,
 #     "output_latency": "25ps",
@@ -81,8 +95,11 @@ mc.addParams({
 link1 = sst.Link("link1")
 link1.connect((cpu, "cache_link", "100ps"), (cache, "high_network_0", "50ps"))
 
+link = sst.Link("link")
+link.connect((cache, "low_network_0", "100ps"), (cache2, "high_network_0", "50ps"))
+
 link2 = sst.Link("link2")
-link2.connect((cache, "directory", "100ps"), (md, "network", "50ps"))
+link2.connect((cache2, "directory", "100ps"), (md, "network", "50ps"))
 
 # link3 = sst.Link("link3")
 # link3.connect((myCmp1, "network", "100ps"), (router, "port0", "50ps"))
