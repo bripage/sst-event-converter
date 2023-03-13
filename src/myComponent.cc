@@ -42,11 +42,9 @@ void MyComponent::init(unsigned int phase) {
 
 void MyComponent::handleNetworkEvent(SST::Event* ev) {
     // Extract the encapsulated MemEvent
-    out.output("handleNetworkEvent() received a RtrEvent event");
     memoryLink->send(ev);
 }
 
 void MyComponent::handleMemoryEvent(SST::Event *ev) {
-    out.output("handleMemoryEvent() received a MemEventBase event");
     rtr_0_Link->send(ev);
 }
