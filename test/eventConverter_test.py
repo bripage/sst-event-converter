@@ -113,3 +113,5 @@ link2.connect((cache2, "directory", "100ps"), (mc, "direct_link", "50ps"))
 # link5 = sst.Link("link5")
 # link5.connect((myCmp2, "memory", "100ps"), (md, "network", "50ps"))
 
+# link6 = sst.Link("link6")
+# link6.connect((md, "memory", "100ps"), (mc, "direct_link", "50ps"))
