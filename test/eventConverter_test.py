@@ -100,17 +100,14 @@ top2.addParams({
 })
 # End router 2
 
-C1_CtoRtr = sst.Link("C1_CtoRtr")
-C1_CtoRtr.connect((L2_1, "directory", "300ps"), (rtr1, "port2", "300ps"))
+C1toRtr = sst.Link("C1toRtr")
+C1toRtr.connect((L2_1, "directory", "300ps"), (rtr1, "port2", "300ps"))
 
-C2_CtoRtr = sst.Link("C2_CtoRtr")
-C2_CtoRtr.connect((L2_2, "directory", "300ps"), (rtr1, "port3", "300ps"))
+R1toR2 = sst.Link("R1toR2")
+R1toR2.connect((rtr1, "port0", "300ps"), (rtr2, "port1", "300ps"))
 
-R1toR2_h = sst.Link("R1toR2_h")
-R1toR2_h.connect((rtr1, "port0", "300ps"), (rtr2, "port1", "300ps"))
-
-R2toR1_h = sst.Link("R2toR1_h")
-R2toR1_h.connect((rtr2, "port0", "300ps"), (rtr1, "port1", "300ps"))
+R2toR1 = sst.Link("R2toR1")
+R2toR1.connect((rtr2, "port0", "300ps"), (rtr1, "port1", "300ps"))
 
 #
 #   Memory Director and Controller
