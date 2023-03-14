@@ -72,13 +72,13 @@ mc1.addParams({
 })
 # End MC and DC components
 
-myComp = sst.Component("myComp","myComponent.MyComponent")
+#myComp = sst.Component("myComp","myComponent.MyComponent")
 
 R2toDC = sst.Link("C2toDC")
-R2toDC.connect((L2_1, "directory", "300ps"), (myComp, "rtr_0", "300ps"))
+R2toDC.connect((L2_1, "directory", "300ps"), (dc1, "network", "300ps"))
 
-MyComptoDC = sst.Link("MyComptoDC")
-MyComptoDC.connect((myComp, "memory", "300ps"), (dc1, "network", "300ps"))
+#MyComptoDC = sst.Link("MyComptoDC")
+#MyComptoDC.connect((myComp, "memory", "300ps"), (dc1, "network", "300ps"))
 
 DCtoMC = sst.Link("DCtoMC")
 DCtoMC.connect((dc1, "memory", "300ps"), (mc1, "direct_link", "300ps"))
