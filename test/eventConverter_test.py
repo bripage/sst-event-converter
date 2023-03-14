@@ -65,6 +65,11 @@ memory.addParams({
     "access_time" : "100 ns",
 })
 
+dc = sst.Component("dc", "memHierarchy.DirectoryController")
+dc.addParams({
+
+})
+
 # Create the link to the cache hierarhcy
 iface = cpu.setSubComponent("memory", "memHierarchy.standardInterface")
 link_cpu_cache = sst.Link("link_cpu_cache")
@@ -75,4 +80,7 @@ link_cpu_l1_l2 = sst.Link("link_l1_l2")
 link_cpu_l1_l2.connect( (L1, "low_network_0", "1000ps"), (L2, "high_network_0", "1000ps") )
 
 link_mem_bus_link = sst.Link("link_l2_mem")
-link_mem_bus_link.connect( (L2, "cache", "10000ps"), (mc, "direct_link", "10000ps") )
+link_mem_bus_link.connect( (L2, "directory", "10000ps"), (dc, "network", "10000ps") )
+
+link_mem_bus_link = sst.Link("link_l2_mem")
+link_mem_bus_link.connect( (dc, "memory", "10000ps"), (dc, "direct_link", "10000ps") )
