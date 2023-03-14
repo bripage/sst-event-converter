@@ -70,17 +70,71 @@ dc.addParams({
 
 })
 
+#
+# Begin Router 1
+#
+rtr1 = sst.Component("rtr1", "merlin.hr_router")
+rtr1.addParams({
+    "id": 0,
+    "output_latency": "25ps",
+    "xbar_bw": "51.2GB/s",
+    "input_buf_size": "2KB",
+    "input_latency": "25ps",
+    "num_ports": 5,
+    "flit_size": "512B",
+    "output_buf_size": "2KB",
+    "link_bw": "51.2GB/s"
+})
+top1 = rtr1.setSubComponent("topology", "merlin.torus")
+top1.addParams({
+    "shape": 2,
+    "local_ports": 3,
+    "width": 1
+})
+# End router 1
+
+#
+# Begin Router 2
+#
+rtr2 = sst.Component("rtr2", "merlin.hr_router")
+rtr2.addParams({
+    "id": 1,
+    "output_latency": "25ps",
+    "xbar_bw": "51.2GB/s",
+    "input_buf_size": "2KB",
+    "input_latency": "25ps",
+    "num_ports": 5,
+    "flit_size": "512B",
+    "output_buf_size": "2KB",
+    "link_bw": "51.2GB/s"
+})
+top2 = rtr2.setSubComponent("topology", "merlin.torus")
+top2.addParams({
+    "shape": 2,
+    "local_ports": 3,
+    "width": 1
+})
+# End router 2
+
 # Create the link to the cache hierarhcy
 #iface = cpu.setSubComponent("memory", "memHierarchy.standardInterface")
 link_cpu_cache = sst.Link("link_cpu_cache")
 link_cpu_cache.connect( (cpu, "cache_link", "1000ps"), (L1, "high_network_0", "1000ps") )
-link_cpu_cache.setNoCut()
+#link_cpu_cache.setNoCut()
 
 link_cpu_l1_l2 = sst.Link("link_l1_l2")
 link_cpu_l1_l2.connect( (L1, "low_network_0", "1000ps"), (L2, "high_network_0", "1000ps") )
 
-link_mem_bus_link = sst.Link("link_l2_dc")
-link_mem_bus_link.connect( (L2, "low_network_0", "10000ps"), (dc, "network", "10000ps") )
+link_r1_r2 = sst.Link("link_r1_r2")
+link_r1_r2.connect( (rtr1, "port0", "10000ps"), (rtr2, "port1", "10000ps") )
+link_r2_r1 = sst.Link("link_r2_r1")
+link_r2_r1.connect( (rtr2, "port0", "10000ps"), (rtr1, "port1", "10000ps") )
 
-link_mem_bus_link = sst.Link("link_dc_mc")
-link_mem_bus_link.connect( (dc, "memory", "10000ps"), (mc, "direct_link", "10000ps") )
+link_l2_r1 = sst.Link("link_l2_r1")
+link_l2_r1.connect( (L2, "directory", "10000ps"), (rtr1, "port2", "10000ps") )
+
+link_r2_dc = sst.Link("link_r2_dc")
+link_r2_dc.connect( (rtr2, "port2", "10000ps"), (dc, "network", "10000ps") )
+
+link_dc_mc = sst.Link("link_dc_mc")
+link_dc_mc.connect( (dc, "memory", "10000ps"), (mc, "direct_link", "10000ps") )
