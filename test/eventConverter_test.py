@@ -11,75 +11,68 @@ sst.setProgramOption("stop-at", "10s")
 #
 #   Begin Core 1
 #
-core1 = sst.Component("core1", "miranda.BaseCPU")
-core1.addParams({
-    "verbose" : 1,
+cpu = sst.Component("cpu", "miranda.BaseCPU")
+cpu.addParams({
+    "verbose" : 0,
     "clock" : "2GHz",
-    "generator" : "miranda.STREAMBenchGenerator"
+    "printStats" : 1,
 })
-gen = core1.setSubComponent("gen1", "miranda.STREAMBenchGenerator")
+gen = cpu.setSubComponent("generator", "miranda.Stencil3DBenchGenerator")
 gen.addParams({
-    "generatorParams.verbose" : 1
+    "verbose" : 0,
+    "nx" : 30,
+    "ny" : 20,
+    "nz" : 10,
 })
 
-L1_1 = sst.Component("L1_1", "memHierarchy.Cache")
-L1_1.addParams({
-    "cache_frequency": "2GHz",
-    "cache_size": "32KB",
-    "associativity": 8,
-    "access_latency_cycles": 4,
-    "L1": 1
+L1 = sst.Component("L1", "memHierarchy.Cache")
+L1.addParams({
+    "access_latency_cycles" : "2",
+    "cache_frequency" : "2 GHz",
+    "replacement_policy" : "lru",
+    "coherence_protocol" : "MESI",
+    "associativity" : "4",
+    "cache_line_size" : "64",
+    "prefetcher" : "cassini.StridePrefetcher",
+    "debug" : "0",
+    "L1" : "1",
+    "cache_size" : "32KB"
 })
 
-L2_1 = sst.Component("L2_1", "memHierarchy.Cache")
-L2_1.addParams({
-    "prefetcher": "cassini.StridePrefetcher",
-    "prefetcher.reach": 16,
-    "prefetcher.detect_range" : 1,
-    "cache_frequency": "2GHz",
-    "cache_size": "256KB",
-    "associativity": 8,
-    "access_latency_cycles": 6,
-    "mshr_num_entries" : 16,
-    "mshr_latency_cycles": 2,
-    "memNIC.network_bw": "51.2GB/s"
+L2 = sst.Component("L2", "memHierarchy.Cache")
+L2.addParams({
+    "access_latency_cycles" : "9",
+    "cache_frequency" : "2Ghz",
+    "replacement_policy" : "lru",
+    "coherence_protocol" : "MESI",
+    "associativity" : "8",
+    "cache_line_size" : "64",
+    "cache_size" : "32 KB",
+    "debug" : "0"
 })
 
-
-C1toL1 = sst.Link("C1toL1")
-C1toL1.connect( (core1, "cache_link", "300ps"), (L1_1, "high_network_0", "300ps") )
-C1_L1toL2 = sst.Link("C1_L1toL2")
-C1_L1toL2.connect( (L1_1, "low_network_0", "300ps"), (L2_1, "high_network_0", "300ps") )
-#
-#   End Core 1
-#
-
-#
-#   Memory Director and Controller
-#
-# dc1 = sst.Component("dc1", "memHierarchy.DirectoryController")
-# dc1.addParams({
-#
-# })
-
-mc1 = sst.Component("mc1", "memHierarchy.MemController")
-mc1.addParams({
-    "clock": "200MHz",
-    "network_bw": "100MB/s",
-    "backing": "malloc",
-    "addr_range_start": 0,
-    "backend.mem_size": "64GiB"
+mc = sst.Component("mc", "memHierarchy.MemController")
+mc.addParams({
+    "debug" : 10,
+    "debug_level" : 10,
+    "clock" : "1GHz",
+    "addr_range_end" : 512*1024*1024-1,
 })
-# End MC and DC components
 
-#myComp = sst.Component("myComp","myComponent.MyComponent")
+memory = mc.setSubComponent("backend", "memHierarchy.simpleMem")
+memory.addParams({
+    "mem_size" : "512MiB",
+    "access_time" : "100 ns",
+})
 
-R2toDC = sst.Link("C2toDC")
-R2toDC.connect((L2_1, "directory", "300ps"), (mc1, "direct_link", "300ps"))
+# Create the link to the cache hierarhcy
+iface = comp_cpu.setSubComponent("memory", "memHierarchy.standardInterface")
+link_cpu_cache = sst.Link("link_cpu_cache")
+link_cpu_cache.connect( (iface, "port", "1000ps"), (L1, "high_network_0", "1000ps") )
+link_cpu_cache.setNoCut()
 
-#MyComptoDC = sst.Link("MyComptoDC")
-#MyComptoDC.connect((myComp, "memory", "300ps"), (dc1, "network", "300ps"))
+link_cpu_l1_l2 = sst.Link("link_l1_l2")
+link_cpu_l1_l2.connect( (L1, "low_network_0", "1000ps"), (L2, "high_network_0", "1000ps") )
 
-# DCtoMC = sst.Link("DCtoMC")
-# DCtoMC.connect((dc1, "memory", "300ps"), (mc1, "direct_link", "300ps"))
-
+link_mem_bus_link = sst.Link("link_l2_mem")
+link_mem_bus_link.connect( (L2, "low_network_0", "10000ps"), (mc, "direct_link", "10000ps") )
