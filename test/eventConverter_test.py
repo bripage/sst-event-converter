@@ -57,10 +57,10 @@ C1_L1toL2.connect( (L1_1, "low_network_0", "300ps"), (L2_1, "high_network_0", "3
 #
 #   Memory Director and Controller
 #
-dc1 = sst.Component("dc1", "memHierarchy.DirectoryController")
-dc1.addParams({
-
-})
+# dc1 = sst.Component("dc1", "memHierarchy.DirectoryController")
+# dc1.addParams({
+#
+# })
 
 mc1 = sst.Component("mc1", "memHierarchy.MemController")
 mc1.addParams({
@@ -75,11 +75,11 @@ mc1.addParams({
 #myComp = sst.Component("myComp","myComponent.MyComponent")
 
 R2toDC = sst.Link("C2toDC")
-R2toDC.connect((L2_1, "directory", "300ps"), (dc1, "network", "300ps"))
+R2toDC.connect((L2_1, "directory", "300ps"), (mc1, "direct_link", "300ps"))
 
 #MyComptoDC = sst.Link("MyComptoDC")
 #MyComptoDC.connect((myComp, "memory", "300ps"), (dc1, "network", "300ps"))
 
-DCtoMC = sst.Link("DCtoMC")
-DCtoMC.connect((dc1, "memory", "300ps"), (mc1, "direct_link", "300ps"))
+# DCtoMC = sst.Link("DCtoMC")
+# DCtoMC.connect((dc1, "memory", "300ps"), (mc1, "direct_link", "300ps"))
 
