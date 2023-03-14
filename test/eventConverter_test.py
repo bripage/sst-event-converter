@@ -132,11 +132,7 @@ link_rtr2_rtr1 = sst.Link("link_rtr2_rtr1")
 link_rtr2_rtr1.connect( (rtr2, "port0", "1000ps"), (rtr1, "port1", "1000ps") )
 
 link_cpu_l2_rtr1 = sst.Link("link_cpu_l2_rtr1")
-link_cpu_l2_rtr1.connect( (L2, "directory", "10000ps"), (rtr1, "port2", "10000ps") )
-link_cpu_l2_rtr1.setNoCut()
-
-link_rtr2_mem = sst.Link("link_rtr2_mem")
-link_rtr2_mem.connect( (rtr2, "port2", "10000ps"), (dc, "network", "10000ps") )
+link_cpu_l2_rtr1.connect( (L2, "directory", "10000ps"), (dc, "network", "10000ps") )
 
 link_dc_mc = sst.Link("link_dc_mc")
 link_dc_mc.connect( (dc, "memory", "10000ps"), (mc, "direct_link", "10000ps") )
