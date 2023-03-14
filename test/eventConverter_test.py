@@ -79,8 +79,8 @@ link_cpu_cache.setNoCut()
 link_cpu_l1_l2 = sst.Link("link_l1_l2")
 link_cpu_l1_l2.connect( (L1, "low_network_0", "1000ps"), (L2, "high_network_0", "1000ps") )
 
-link_mem_bus_link = sst.Link("link_l2_mem")
+link_mem_bus_link = sst.Link("link_l2_dc")
 link_mem_bus_link.connect( (L2, "directory", "10000ps"), (dc, "network", "10000ps") )
 
-link_mem_bus_link = sst.Link("link_l2_mem")
+link_mem_bus_link = sst.Link("link_dc_mc")
 link_mem_bus_link.connect( (dc, "memory", "10000ps"), (dc, "direct_link", "10000ps") )
