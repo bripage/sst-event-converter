@@ -55,61 +55,6 @@ C1_L1toL2.connect( (L1_1, "low_network_0", "300ps"), (L2_1, "high_network_0", "3
 #
 
 #
-# Begin Router 1
-#
-rtr1 = sst.Component("rtr1", "merlin.hr_router")
-rtr1.addParams({
-    "id": 0,
-    "output_latency": "25ps",
-    "xbar_bw": "51.2GB/s",
-    "input_buf_size": "2KB",
-    "input_latency": "25ps",
-    "num_ports": 5,
-    "flit_size": "512B",
-    "output_buf_size": "2KB",
-    "link_bw": "51.2GB/s"
-})
-top1 = rtr1.setSubComponent("topology", "merlin.torus")
-top1.addParams({
-    "shape": 2,
-    "local_ports": 3,
-    "width": 1
-})
-# End router 1
-
-#
-# Begin Router 2
-#
-rtr2 = sst.Component("rtr2", "merlin.hr_router")
-rtr2.addParams({
-    "id": 1,
-    "output_latency": "25ps",
-    "xbar_bw": "51.2GB/s",
-    "input_buf_size": "2KB",
-    "input_latency": "25ps",
-    "num_ports": 5,
-    "flit_size": "512B",
-    "output_buf_size": "2KB",
-    "link_bw": "51.2GB/s"
-})
-top2 = rtr2.setSubComponent("topology", "merlin.torus")
-top2.addParams({
-    "shape": 2,
-    "local_ports": 3,
-    "width": 1
-})
-# End router 2
-
-C1toRtr = sst.Link("C1toRtr")
-C1toRtr.connect((L2_1, "directory", "300ps"), (rtr1, "port2", "300ps"))
-
-R1toR2 = sst.Link("R1toR2")
-R1toR2.connect((rtr1, "port0", "300ps"), (rtr2, "port1", "300ps"))
-
-R2toR1 = sst.Link("R2toR1")
-R2toR1.connect((rtr2, "port0", "300ps"), (rtr1, "port1", "300ps"))
-
-#
 #   Memory Director and Controller
 #
 dc1 = sst.Component("dc1", "memHierarchy.DirectoryController")
@@ -130,7 +75,7 @@ mc1.addParams({
 myComp = sst.Component("myComp","myComponent.MyComponent")
 
 R2toDC = sst.Link("C2toDC")
-R2toDC.connect((rtr2, "port4", "300ps"), (myComp, "rtr_0", "300ps"))
+R2toDC.connect((L2_1, "directory", "300ps"), (myComp, "rtr_0", "300ps"))
 
 MyComptoDC = sst.Link("MyComptoDC")
 MyComptoDC.connect((myComp, "memory", "300ps"), (dc1, "network", "300ps"))
