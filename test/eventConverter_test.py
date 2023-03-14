@@ -54,51 +54,6 @@ C1_L1toL2.connect( (L1_1, "low_network_0", "300ps"), (L2_1, "high_network_0", "3
 #   End Core 1
 #
 
-
-#
-#   Begin Core 2
-#
-core2 = sst.Component("core2", "miranda.BaseCPU")
-core2.addParams({
-    "verbose" : 1,
-    "clock" : "2GHz",
-    "generator" : "miranda.STREAMBenchGenerator"
-})
-gen = core2.setSubComponent("gen2", "miranda.STREAMBenchGenerator")
-gen.addParams({
-    "generatorParams.verbose" : 1
-})
-
-L1_2 = sst.Component("L1_2", "memHierarchy.Cache")
-L1_2.addParams({
-    "cache_frequency": "2GHz",
-    "cache_size": "32KB",
-    "associativity": 8,
-    "access_latency_cycles": 4,
-    "L1": 1
-})
-
-L2_2 = sst.Component("L2_2", "memHierarchy.Cache")
-L2_2.addParams({
-    "prefetcher": "cassini.StridePrefetcher",
-    "prefetcher.reach": 16,
-    "prefetcher.detect_range" : 1,
-    "cache_frequency": "2GHz",
-    "cache_size": "256KB",
-    "associativity": 8,
-    "access_latency_cycles": 6,
-    "mshr_num_entries" : 16,
-    "mshr_latency_cycles": 2,
-    "memNIC.network_bw": "51.2GB/s"
-})
-
-
-C2toL1 = sst.Link("C2toL1")
-C2toL1.connect( (core2, "cache_link", "300ps"), (L1_2, "high_network_0", "300ps") )
-C2_L1toL2 = sst.Link("C2_L1toL2")
-C2_L1toL2.connect( (L1_2, "low_network_0", "300ps"), (L2_2, "high_network_0", "300ps") )
-# End Core 2
-
 #
 # Begin Router 1
 #
@@ -151,11 +106,11 @@ C1_CtoRtr.connect((L2_1, "directory", "300ps"), (rtr1, "port2", "300ps"))
 C2_CtoRtr = sst.Link("C2_CtoRtr")
 C2_CtoRtr.connect((L2_2, "directory", "300ps"), (rtr1, "port3", "300ps"))
 
-C1toC2_h = sst.Link("C1toC2_h")
-C1toC2_h.connect((rtr1, "port0", "300ps"), (rtr2, "port1", "300ps"))
+R1toR2_h = sst.Link("R1toR2_h")
+R1toR2_h.connect((rtr1, "port0", "300ps"), (rtr2, "port1", "300ps"))
 
-C2toC1_h = sst.Link("C2toC1_h")
-C2toC1_h.connect((rtr2, "port0", "300ps"), (rtr1, "port1", "300ps"))
+R2toR1_h = sst.Link("R2toR1_h")
+R2toR1_h.connect((rtr2, "port0", "300ps"), (rtr1, "port1", "300ps"))
 
 #
 #   Memory Director and Controller
