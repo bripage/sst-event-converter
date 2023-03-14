@@ -29,8 +29,8 @@
             )
 
             SST_ELI_DOCUMENT_PORTS(
-            { "memory", "Memory interface", {""}},
-            {"rtr_0", "Router mesh col 0", {""} }
+            { "memory", "Memory interface", {"memHierarchy.MemEventBase"}},
+            {"rtr_0", "Router mesh col 0", {"memHierarchy.MemEventBase"} }
             )
 
 
