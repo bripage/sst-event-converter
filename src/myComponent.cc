@@ -42,6 +42,21 @@ void MyComponent::init(unsigned int phase) {
 
     if (!memoryLink)
         out.fatal(CALL_INFO, -1, "%s, Error: unable to configure link memoryLink'\n", getName().c_str());
+
+    SST::Event *ev;
+    while ((ev = rtr_0_Link->recvInitData())) {
+        SST::MemHierarchy::MemEventInit* memEvent = dynamic_cast<SST::MemHierarchy::MemEventInit*>(ev);
+        if (memEvent) {
+            memoryLink->sendInitData(memEvent->clone());
+        }
+        delete memEvent;
+    }
+
+    while ((ev = memoryLink->recvInitData())) {
+        SST::MemHierarchy::MemEventInit* memEvent = dynamic_cast<SST::MemHierarchy::MemEventInit*>(ev);
+        delete memEvent;
+    }
+
 }
 
 void MyComponent::handleNetworkEvent(SST::Event* ev) {
