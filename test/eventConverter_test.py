@@ -66,7 +66,7 @@ memory.addParams({
 })
 
 # Create the link to the cache hierarhcy
-iface = comp_cpu.setSubComponent("memory", "memHierarchy.standardInterface")
+iface = cpu.setSubComponent("memory", "memHierarchy.standardInterface")
 link_cpu_cache = sst.Link("link_cpu_cache")
 link_cpu_cache.connect( (iface, "port", "1000ps"), (L1, "high_network_0", "1000ps") )
 link_cpu_cache.setNoCut()
