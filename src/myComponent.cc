@@ -20,14 +20,14 @@ MyComponent::MyComponent(SST::ComponentId_t id, SST::Params &params) : Component
 
 void MyComponent::configureLinks() {
     SST::Link* link;
-    if (isPortConnected("rtr_0") {
+    if (isPortConnected("rtr_0")) {
         link = configureLink("rtr_0", "50 ps",
                              new SST::Event::Handler<MyComponent>(this, &MyComponent::handleNetworkEvent));
         rtr_0_Link = link;
     } else {
         out.fatal(CALL_INFO, -1, "%s, Error: rtr_0_Link has no connection'\n", getName().c_str());
     }
-    if (isPortConnected("memory") {
+    if (isPortConnected("memory")) {
         link = configureLink("memory", "50 ps",
                              new SST::Event::Handler<MyComponent>(this, &MyComponent::handleMemoryEvent));
         memoryLink = link;
