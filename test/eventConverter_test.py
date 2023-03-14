@@ -139,4 +139,4 @@ link_rtr2_mem = sst.Link("link_rtr2_mem")
 link_rtr2_mem.connect( (rtr2, "port2", "10000ps"), (dc, "network", "10000ps") )
 
 link_dc_mc = sst.Link("link_dc_mc")
-link_dc_mc.connect( (dc, "memory", "10000ps"), (dc, "direct_link", "10000ps") )
+link_dc_mc.connect( (dc, "memory", "10000ps"), (mc, "direct_link", "10000ps") )
